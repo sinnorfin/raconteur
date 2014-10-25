@@ -1,1 +1,5 @@
-README
+
+'Raconteur' is a python/pyglet game project. 
+It aims to be a character driven turn based RPG, combining on-the-spot gameplay
+with generated story arcs.
+
