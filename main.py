@@ -11,8 +11,8 @@ from pyglet.gl import *
 pyglet.resource.path = ['res']
 pyglet.resource.reindex()
 
-ROOMSIZEX = 20
-ROOMSIZEY = 15
+ROOMSIZEX = 10
+ROOMSIZEY = 10
 glEnable(GL_TEXTURE_2D)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
@@ -686,7 +686,7 @@ class Player(object):
         self.inv = [] if inv is None else inv
         self.itemcount = 0
         self.look = 'pchar'
-        self.mrange = 15
+        self.mrange = 5
     def connect(self):
         for sp_overlay in List.sp_overlays:
             if (sp_overlay.id == self.id and 
