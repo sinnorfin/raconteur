@@ -1,4 +1,5 @@
-import lists
+import store
+from sp import Sp_Tile
 cid = 2 
 class Player(object):   
     def __init__(self, coor, img, id=0,name = 'Player',
@@ -6,26 +7,26 @@ class Player(object):
         self.coor = coor 
         self.img = img
         self.id = id
-        self.loc = lists.findtile(self.coor) 
+        self.loc = store.findtile(self.coor) 
         self.name = name
         self.inv = [] if inv is None else inv
         self.itemcount = 0
         self.look = 'pchar'
         self.mrange = 5
-        sp_player = Sp_Tile(x = clevel.ct(g_player.coor[0]),
-                            y = clevel.ct(g_player.coor[1]), 
-                            img = getim(g_player),id = g_player.id,
-                            bt = player_batch)
-        lists.g_players.append(g_player)
-        lists.sp_overlays.append(sp_player)
+        sp_player = Sp_Tile(x = store.ct(self.coor[0]),
+                            y = store.ct(self.coor[1]), 
+                            img = store.getim(self),id = self.id,
+                            batch = store.player_bt)
+        store.add(self,'gp')
+        store.add(sp_player,'spo')
     def connect(self):
-        for sp_overlay in lists.sp_overlays:
+        for sp_overlay in store.store['spo']:
             if (sp_overlay.id == self.id and 
                not sp_overlay.ol):
                 return sp_overlay
     def cols(self):
         collision = False
-        for g_tile in lists.g_tiles:
+        for g_tile in store.store['gt']:
             if (g_tile.passable == False and 
                 g_tile.coor == self.coor):
                     collision = True
@@ -89,8 +90,8 @@ class Player(object):
                 costlist.append(path.cost)
             Path.cpath = Path.pl[costlist.index(min(costlist))]
             for node in Path.cpath.nodes:
-                tag = pyglet.sprite.Sprite(x= clevel.ct(node.coor[0]),
-                              y= clevel.ct(node.coor[1]),
+                tag = pyglet.sprite.Sprite(x= store.ct(node.coor[0]),
+                              y= store.ct(node.coor[1]),
                               img = self.image['marker2'],
                               bt = debug_batch)   
                 Path.wp.append(tag)
@@ -99,8 +100,8 @@ class Player(object):
         self.checkmv(self.loc,True)        
         Path.tagged = list(set(Path.tagged))
         for tile in Path.tagged:
-            tag = pyglet.sprite.Sprite(x= clevel.ct(tile.coor[0]),
-                          y= clevel.ct(tile.coor[1]),
+            tag = pyglet.sprite.Sprite(x= store.ct(tile.coor[0]),
+                          y= store.ct(tile.coor[1]),
                           img = self.image['marker'],
                           bt = debug_batch)   
             Path.tags.append(tag)
@@ -108,7 +109,7 @@ class Player(object):
             Path.ptagged.append(tagged)
         if ontiles([Cursor.mposx,Cursor.mposy],Path.ptagged):
             Path.clean_Path(tags=False)
-            Path.goal = lists.findtile(Cursor.coor)
+            Path.goal = store.findtile(Cursor.coor)
             Control.CurrentPlayer.pathing()
     def checkmv(self,tchk,first = False,pat=False,f=None):  
         checkdirs = [tchk.dirs['xam'],tchk.dirs['xap'],
@@ -151,32 +152,32 @@ class Player(object):
             self.coor[1] += 1
             self.look = 'pcharB'
             self.connect()._set_image(self.image[self.look])
-            self.connect().y = clevel.ct(self.coor[1])
-            self.loc = lists.findtile(self.coor)
+            self.connect().y = store.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
             Control.turn()
     def movedown(self):
         if not level.coll([self.coor[1]-1,self.coor[0]]):
             self.coor[1] -= 1
             self.look = 'pcharF'
             self.connect()._set_image(self.image[self.look])
-            self.connect().y = clevel.ct(self.coor[1])
-            self.loc = lists.findtile(self.coor)
+            self.connect().y = store.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
             Control.turn()
     def moveleft(self):
         if not level.coll([self.coor[1],self.coor[0]-1]):
             self.coor[0] -= 1 
             self.look = 'pcharR'
             self.connect()._set_image(self.image[self.look])
-            self.connect().x = clevel.ct(self.coor[0])
-            self.loc = lists.findtile(self.coor)
+            self.connect().x = store.ct(self.coor[0])
+            self.loc = store.findtile(self.coor)
             Control.turn()
     def moveright(self):
         if not level.coll([self.coor[1],self.coor[0]+1]):
             self.coor[0] += 1
             self.look = 'pchar'
             self.connect()._set_image(self.image[self.look])
-            self.connect().x = clevel.ct(self.coor[0])
-            self.loc = lists.findtile(self.coor)
+            self.connect().x = store.ct(self.coor[0])
+            self.loc = store.findtile(self.coor)
             Control.turn()
     def pmove(self,path,step):
         if Path.step < len(path):
@@ -186,18 +187,11 @@ class Player(object):
             Path.step = 0
             self.coor[0] = Path.goal.coor[0]
             self.coor[1] = Path.goal.coor[1]
-            self.loc = lists.findtile(self.coor)
-            self.connect().x = clevel.ct(self.coor[0])
-            self.connect().y = clevel.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
+            self.connect().x = store.ct(self.coor[0])
+            self.connect().y = store.ct(self.coor[1])
             Control.turn()
     def addplayer(self):
-        g_newplayer = Player(coor=[self.coor[0]+1,self.coor[1]+1], 
-                             img='pchar',id=cid)
+        g_newplayer = Player(coor=[self.coor[0]+1,
+                             self.coor[1]+1],img='pchar',id=cid)
         cid +=1
-        sp_newplayer = Sp_Tile (x=clevel.ct(g_newplayer.coor[0]), 
-                                y=clevel.ct(g_newplayer.coor[1]), 
-                                img = getim(g_newplayer),
-                                id=g_newplayer.id,
-                                bt = player_batch)
-        lists.g_players.append(g_newplayer)
-        lists.sp_overlays.append(sp_newplayer)
