@@ -21,7 +21,7 @@ class Game(object):
         controls.sp_topath = controls.cplayer   
         controls.goal = controls.cplayer
         control = controls.Play()
-        store.clevel.push_handlers(controls.Play)
+        store.clevel.push_handlers(control)
 def inarea(m_coor,area):
     if (m_coor[0] >= area.coor[0][0] and
         m_coor[0] <= area.coor[0][1] and

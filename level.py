@@ -22,6 +22,7 @@ class Level(pyglet.window.Window):
         self.ycenter = self.ysize / 2
         self.buildmenu = gui.SelBuild(self)
     def on_draw(self):
+        #separate dynamic from static -optimization
         self.clear()
         store.map_bt.draw()
         store.debug_bt.draw()
@@ -259,14 +260,14 @@ def loadlevel():
     for g_tile in lists.g_tiles:
         sp_tile = Sp_Tile(x=clevel.ct(g_tile.coor[0]), y=clevel.ct(g_tile.coor[1]), 
                           img=getim(g_tile),
-                          bt= map_batch,id=g_tile.id)
+                          bt= store.map_batch,id=g_tile.id)
         sp_tile._set_rotation(g_tile.rot)
         lists.sp_tiles.append(sp_tile)
         if g_tile.overlays:
             for ol in g_tile.overlays:
                 sp_overlay = Sp_Tile(x=clevel.ct(ol.x),y=clevel.ct(ol.y),
                                      img=getim(ol),
-                                     bt=item_batch,id=ol.id,
+                                     bt=store.item_batch,id=ol.id,
                                      ol=True) 
                 lists.sp_overlays.append(sp_overlay)      
     for g_player in lists.g_players:
@@ -274,7 +275,7 @@ def loadlevel():
                              y=clevel.ct(g_player.coor[1]),
                              img = getim(g_player),
                              id= g_player.id,
-                             bt = player_batch)
+                             bt = store.player_batch)
         lists.sp_overlays.append(sp_overlay)   
     loadlev.close()
     Control.turn()

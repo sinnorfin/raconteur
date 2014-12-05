@@ -86,7 +86,7 @@ class SelBuild(object):
                 overloc.overlays.append(key)
                 sp_overlay = Sp_Tile(x=store.ct(key.x),y=store.ct(key.y),
                                      img=getim(key),
-                                     batch=item_bt,id=key.id,
+                                     batch=store.item_bt,id=key.id,
                                      ol=True) 
                 sp_overlays.append(sp_overlay)      
                 Item.objid += 1
@@ -99,7 +99,7 @@ class Button(object):
         self.o_coor = o_coor
         button = pyglet.sprite.Sprite(x=o_coor[0],y=o_coor[1],
                                       img=self.image[self.img], 
-                                      bt = menu_batch)
+                                      bt = store.menu_batch)
         sp_gui.append(button)
     def press(self):
         self.function()

@@ -1,3 +1,4 @@
+from pyglet.window import key
 import store
 waypoint = False
 cplayer = ''
@@ -27,6 +28,7 @@ def pushhandlers(Class):
 class Play(object):
     @store.clevel.event
     def on_key_press(self,symbol,modifiers):
+        print 'FOUND'
         if symbol == key.UP:
             cplayer.moveup()          
         elif symbol == key.DOWN:
@@ -39,11 +41,11 @@ class Play(object):
             if not cplayer.cols():
                 if cplayer.img == 'pchar':
                     cplayer.connect()._set_image(
-                                       self.image['pchar_1b'])
+                                       store.image['pchar_1b'])
                     cplayer.img = 'pchar_1b'
                 else: 
                     cplayer.connect()._set_image(
-                                       self.image['pchar'])
+                                       store.image['pchar'])
                     cplayer.img = 'pchar'
                 self.turn()
         elif symbol == key.B:

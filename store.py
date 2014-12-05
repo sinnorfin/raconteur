@@ -1,5 +1,5 @@
 import os
-import pyglet.resource
+import pyglet
 import level
 import gui
 pyglet.resource.path = ['res']
