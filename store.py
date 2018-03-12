@@ -18,16 +18,16 @@ def create():
     for name in listname:
         store[name]= []
 def add(what,where):
-    store[where].append(what)    
+    store[where].append(what)
 def remove(what,where):
     pass
 def empty(what):
     store[what] = []
 def load_images():
     for (file) in (os.listdir('res')):
-        image[file.split('.')[0]] = pyglet.resource.image(file) 
+        image[file.split('.')[0]] = pyglet.resource.image(file)
         #creates pyglet images in image dictionary
-        if file.split('_')[0] != 'c': 
+        if file.split('_')[0] != 'c':
             # centers images not beginning with 'c'
             center_tile(image[file.split('.')[0]])
 def center_tile(im): # puts anchor to image center

@@ -1,6 +1,6 @@
 import gui
 import tile
-import cPickle
+import _pickle as cPickle
 import random
 import pyglet.window
 import store
@@ -20,6 +20,8 @@ class Level(pyglet.window.Window):
         self.xcenter = self.xsize / 2
         self.ysize = self.height
         self.ycenter = self.ysize / 2
+        self.bmu()
+    def bmu(self):
         self.buildmenu = gui.SelBuild(self)
     def on_draw(self):
         #separate dynamic from static -optimization
@@ -52,7 +54,7 @@ class Level(pyglet.window.Window):
             self.ysize = height*scaletoint
         width = self.xsize
         height = self.ysize
-    def levelgen(self): 
+    def levelgen(self):
         if store.store['spt']: dellevel()
         self.levelarea = Gamearea(1,'level',
                              [[0,store.ts*self.x],
@@ -61,7 +63,7 @@ class Level(pyglet.window.Window):
         genid = 1
         for i in range(self.x):
             store.add(ctile(gcoor,genid),'gt')
-            genid +=1   
+            genid +=1
             for i in range(self.y-1):
                 gcoor= [gcoor[0],gcoor[1] + 1]
                 store.add(ctile(gcoor,genid),'gt')
@@ -71,7 +73,7 @@ class Level(pyglet.window.Window):
         for tile in store.store['gt']:
             tile.interlace(store.store['gt'])
             sp_tile = self.buildmenu.build(tile,'space',
-                                           tile.coor,tile.id)  
+                                           tile.coor,tile.id)
             if len(tile.adjl) != 8:
                 sp_tile = self.buildmenu.build(tile,'wall',
                                                tile.coor)
@@ -81,24 +83,24 @@ class Gamearea(object):
         self.name = name
         self.coor = coor
 def adj(tocheck, against):
-    if (against.coor[0] == tocheck.coor[0] + 1 and 
+    if (against.coor[0] == tocheck.coor[0] + 1 and
         against.coor[1] == tocheck.coor[1] or
-        against.coor[0] == tocheck.coor[0] - 1 and 
+        against.coor[0] == tocheck.coor[0] - 1 and
         against.coor[1] == tocheck.coor[1] or
         against.coor[1] == tocheck.coor[1] + 1 and
         against.coor[0] == tocheck.coor[0] or
-        against.coor[1] == tocheck.coor[1] - 1 and 
+        against.coor[1] == tocheck.coor[1] - 1 and
         against.coor[0] == tocheck.coor[0]) :
         adj = True
     else: adj = False
     return adj
 def adjlist(tocheck):
     adjlist = []
-    for g_tile in tocheck.dirs.itervalues():
+    for g_tile in iter(tocheck.dirs.values()):
         if g_tile and g_tile.passable == False:
             adjlist.append(g_tile)
-    for g_tile in tocheck.dirs.itervalues():
-        if g_tile and g_tile.passable == False: 
+    for g_tile in iter(tocheck.dirs.values()):
+        if g_tile and g_tile.passable == False:
             adjlist.append(g_tile)
     return adjlist
 def arrange(toarrange,fit=True):
@@ -106,18 +108,18 @@ def arrange(toarrange,fit=True):
     toarrange.rot = 0
     xac = 0
     yac = 0
-    if (toarrange.dirs['xam'] and 
-        toarrange.dirs['xam'].passable == False): 
-        xac= xac+1 
-    if (toarrange.dirs['xap'] and 
-        toarrange.dirs['xap'].passable == False): 
-        xac= xac+1 
-    if (toarrange.dirs['yam'] and 
-        toarrange.dirs['yam'].passable == False): 
-        yac= yac+1 
-    if (toarrange.dirs['yap'] and 
-        toarrange.dirs['yap'].passable == False): 
-        yac= yac+1 
+    if (toarrange.dirs['xam'] and
+        toarrange.dirs['xam'].passable == False):
+        xac= xac+1
+    if (toarrange.dirs['xap'] and
+        toarrange.dirs['xap'].passable == False):
+        xac= xac+1
+    if (toarrange.dirs['yam'] and
+        toarrange.dirs['yam'].passable == False):
+        yac= yac+1
+    if (toarrange.dirs['yap'] and
+        toarrange.dirs['yap'].passable == False):
+        yac= yac+1
     if xac == 0 and yac == 0:
         toarrange.connect()._set_image(store.image['pil'])
         toarrange.img = 'pil'
@@ -130,7 +132,7 @@ def arrange(toarrange,fit=True):
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 270
-        elif (toarrange.dirs['xam'] and 
+        elif (toarrange.dirs['xam'] and
             toarrange.dirs['xam'].passable == False):
             toarrange.connect()._set_image(store.image['cap'])
             toarrange.connect()._set_rotation(90)
@@ -147,28 +149,28 @@ def arrange(toarrange,fit=True):
         if xac+yac == 2:
             toarrange.connect()._set_image(store.image['corner'])
             toarrange.img = 'corner'
-            if ((toarrange.dirs['xap'] and 
+            if ((toarrange.dirs['xap'] and
                 toarrange.dirs['yam']) and
                 (toarrange.dirs['xap'].passable == False and
                 toarrange.dirs['yam'].passable == False)):
                 toarrange.connect()._set_rotation(0)
                 toarrange.tt = 'cse'
                 toarrange.rot = 0
-            elif ((toarrange.dirs['xam'] and 
+            elif ((toarrange.dirs['xam'] and
                 toarrange.dirs['yam']) and
                 (toarrange.dirs['xam'].passable == False and
                 toarrange.dirs['yam'].passable == False)):
                 toarrange.connect()._set_rotation(90)
                 toarrange.tt = 'csw'
                 toarrange.rot = 90
-            elif ((toarrange.dirs['xam'] and 
+            elif ((toarrange.dirs['xam'] and
                 toarrange.dirs['yap']) and
                 (toarrange.dirs['xam'].passable == False and
                 toarrange.dirs['yap'].passable == False)):
                 toarrange.connect()._set_rotation(180)
                 toarrange.tt = 'cnw'
                 toarrange.rot = 180
-            else:   
+            else:
                 toarrange.connect()._set_rotation(270)
                 toarrange.tt = 'cne'
                 toarrange.rot = 270
@@ -190,7 +192,7 @@ def arrange(toarrange,fit=True):
                 toarrange.connect()._set_rotation(180)
                 toarrange.tt = 'te'
                 toarrange.rot = 180
-            else: 
+            else:
                 toarrange.connect()._set_rotation(270)
                 toarrange.tt = 'ts'
                 toarrange.rot = 270
@@ -198,15 +200,15 @@ def arrange(toarrange,fit=True):
             toarrange.connect()._set_image(store.image['fourway'])
             toarrange.img = 'fourway'
             toarrange.tt = 'fw'
-    else: 
-        if (yac == 1 and toarrange.dirs['yam'] and 
+    else:
+        if (yac == 1 and toarrange.dirs['yam'] and
             toarrange.dirs['yam'].passable == False):
             toarrange.connect()._set_image(store.image['cap'])
             toarrange.connect()._set_rotation(0)
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 0
-        elif (yac == 1 and toarrange.dirs['yap'] and 
+        elif (yac == 1 and toarrange.dirs['yap'] and
             toarrange.dirs['yap'].passable == False):
             toarrange.connect()._set_image(store.image['cap'])
             toarrange.connect()._set_rotation(180)
@@ -235,10 +237,10 @@ def ctile(gcoor,genid):
     var_space = ['space','space_v1','space','space_v2','space_v3']
     g_gen = tile.Tile(img=var_space[random.randint(0,
                    len(var_space)-1)],
-                   id=genid,coor=gcoor,occup=False)  
+                   id=genid,coor=gcoor,occup=False)
     return g_gen
 def standon(tocheck, against):
-    if (against.coor[0] == tocheck.x and 
+    if (against.coor[0] == tocheck.x and
         against.coor[1] == tocheck.y) :
         standon = True
     else: standon = False
@@ -247,8 +249,8 @@ def savelevel():
     savelev = open('saved_level','wb')
     cPickle.dump(lists.g_tiles, savelev)
     cPickle.dump(lists.g_players, savelev)
-    savelev.close()     
-def loadlevel(): 
+    savelev.close()
+def loadlevel():
     dellevel()
     for sp_overlay in lists.sp_overlays:
         sp_overlay.delete()
@@ -258,7 +260,7 @@ def loadlevel():
     lists.g_tiles = cPickle.load(loadlev)
     lists.g_players = cPickle.load(loadlev)
     for g_tile in lists.g_tiles:
-        sp_tile = Sp_Tile(x=clevel.ct(g_tile.coor[0]), y=clevel.ct(g_tile.coor[1]), 
+        sp_tile = Sp_Tile(x=clevel.ct(g_tile.coor[0]), y=clevel.ct(g_tile.coor[1]),
                           img=getim(g_tile),
                           bt= store.map_batch,id=g_tile.id)
         sp_tile._set_rotation(g_tile.rot)
@@ -268,21 +270,21 @@ def loadlevel():
                 sp_overlay = Sp_Tile(x=clevel.ct(ol.x),y=clevel.ct(ol.y),
                                      img=getim(ol),
                                      bt=store.item_batch,id=ol.id,
-                                     ol=True) 
-                lists.sp_overlays.append(sp_overlay)      
+                                     ol=True)
+                lists.sp_overlays.append(sp_overlay)
     for g_player in lists.g_players:
         sp_overlay = Sp_Tile(x=clevel.ct(g_player.coor[0]),
                              y=clevel.ct(g_player.coor[1]),
                              img = getim(g_player),
                              id= g_player.id,
                              bt = store.player_batch)
-        lists.sp_overlays.append(sp_overlay)   
+        lists.sp_overlays.append(sp_overlay)
     loadlev.close()
     Control.turn()
 def dellevel(delol=False):
     if delol == True:
-        lists.sp_overlays[:] = [ol for ol in 
-                               List.sp_overlays if not 
+        lists.sp_overlays[:] = [ol for ol in
+                               List.sp_overlays if not
                                det_ol(ol)]
     for sp_tile in lists.sp_tiles:
         sp_tile.delete()

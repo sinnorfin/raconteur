@@ -1,5 +1,6 @@
 from pyglet.window import key
 import store
+import gui
 waypoint = False
 cplayer = ''
 sp_topath = ''
@@ -10,14 +11,14 @@ distances = []
 xlist = []
 ylist = []
 handleraltered = False
-inturn = 0     
+inturn = 0
 def turn():
     self.inturn += 1
     playnum = len(lists.g_players)
     if inturn == playnum:
         inturn = 0
     cplayer = lists.g_players[inturn]
-    Label.create(cplayer.name, 
+    Label.create(cplayer.name,
                   Label.playername_label)
 def pushhandlers(Class):
     if handleraltered == True:
@@ -28,9 +29,9 @@ def pushhandlers(Class):
 class Play(object):
     @store.clevel.event
     def on_key_press(self,symbol,modifiers):
-        print 'FOUND'
+        print ('FOUND')
         if symbol == key.UP:
-            cplayer.moveup()          
+            cplayer.moveup()
         elif symbol == key.DOWN:
             cplayer.movedown()
         elif symbol == key.LEFT:
@@ -43,22 +44,22 @@ class Play(object):
                     cplayer.connect()._set_image(
                                        store.image['pchar_1b'])
                     cplayer.img = 'pchar_1b'
-                else: 
+                else:
                     cplayer.connect()._set_image(
                                        store.image['pchar'])
                     cplayer.img = 'pchar'
                 self.turn()
         elif symbol == key.B:
             if not cplayer.cols():
-                if SelBuild.c[1] == 1:
-                    SelBuild.overlay(SelBuild.buildlist[
-                                     SelBuild.c[0]][0],
+                if gui.SelBuild.c[1] == 1:
+                    gui.SelBuild.overlay(gui.SelBuild.buildlist[
+                                     gui.SelBuild.c[0]][0],
                             cplayer.coor,
                             findtile(cplayer))
                     self.turn()
                 else:
-                    SelBuild.build(SelBuild.buildlist[
-                                        SelBuild.c[0]][0],
+                    gui.SelBuild.build(gui.SelBuild.buildlist[
+                                        gui.SelBuild.c[0]][0],
                             cplayer.coor,
                             findtile(cplayer))
                     self.turn()
@@ -76,9 +77,9 @@ class Play(object):
         elif symbol == key.L:
             clevel.loadlevel()
         elif symbol == key.Q:
-            SelBuild.next()
+            gui.SelBuild.next(self)
         elif symbol == key.O:
-            print len(cplayer.player_bordering())
+            print (len(cplayer.player_bordering()))
         elif symbol == key.T:
             pushhandlers(Typein)
             Typein.firstt = True
@@ -88,27 +89,27 @@ class Play(object):
     @store.clevel.event
     def on_mouse_motion(self,x,y,dx,dy):
         if (x+self.anctile > Cursor.mposx + self.tilesize or
-            x+self.anctile < Cursor.mposx or 
-            y+self.anctile > Cursor.mposy + self.tilesize or 
+            x+self.anctile < Cursor.mposx or
+            y+self.anctile > Cursor.mposy + self.tilesize or
             y+self.anctile < Cursor.mposy ):
             if inarea([x,y],level.levelarea):
                 Cursor.xcoor = math.floor(x/self.tilesize)
                 Cursor.ycoor = math.floor(y/self.tilesize)
-                Cursor.cursor = pyglet.sprite.Sprite( 
+                Cursor.cursor = pyglet.sprite.Sprite(
                              x =clevel.ct(Cursor.xcoor),
                              y =clevel.ct(Cursor.ycoor),
-                             img = self.image['cursor'])          
-                Cursor.mposx = Cursor.cursor.x 
-                Cursor.mposy = Cursor.cursor.y 
+                             img = self.image['cursor'])
+                Cursor.mposx = Cursor.cursor.x
+                Cursor.mposy = Cursor.cursor.y
                 Cursor.coor = [Cursor.xcoor, Cursor.ycoor]
                 Cursor.onarea = 'l'
             else: Cursor.onarea = 'o'
     @store.clevel.event
-    def on_mouse_press(self,x,y,button,modifiers): 
+    def on_mouse_press(self,x,y,button,modifiers):
         clickloc = findtile(Cursor.coor)
         if button == mouse.LEFT:
             if (Gui.rcm[0] and inarea(Cursor.coor,
-                level.levelarea)): 
+                level.levelarea)):
                 Gui.rcm[1].click([x,y])
             elif (not Gui.rcm[0] and inarea(Cursor.coor,
                 level.levelarea)):
@@ -119,18 +120,18 @@ class Play(object):
                             func.use(clickloc)
             #elif lists.g_tiles:
                 #for g_tile in lists.g_tiles:
-                    #if Cursor.coor == g_tile.coor: 
+                    #if Cursor.coor == g_tile.coor:
                         #if not level.standon(
                             #cplayer, g_tile):
                                 #pathto(
                                     #cplayer,g_tile)
         elif button == mouse.RIGHT:
             if inarea([x,y],level.levelarea):
-                print 'MENNU'
+                print ('MENNU')
                 if Gui.rcm[0]:
-                   Gui.killrcm() 
+                   Gui.killrcm()
                 rcm = Gui([x,y],'rcm',clickloc)
                 Gui.rcm.append(rcm)
-            else: print 'NOMENU'
+            else: print ('NOMENU')
         elif button == mouse.MIDDLE:
-            print len(clickloc.functions)
+            print (len(clickloc.functions))

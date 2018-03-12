@@ -21,10 +21,10 @@ class SelBuild(object):
             self.c[0] = 0
         self.c[1] = self.blist[self.c[0]][1]
         self.label = pyglet.text.Label(
-                                        self.blist[self.c[0]][0], 
+                                        self.blist[self.c[0]][0],
                                         'Courier_new',30,
                                         x= self.game_window.xcenter,
-                                        y = self.game_window.y * 
+                                        y = self.game_window.y *
                                         self.game_window.ts+25,
                                         anchor_x = 'center',
                                         anchor_y = 'center')
@@ -38,7 +38,7 @@ class SelBuild(object):
             sp_built = Sp_Tile(x= scoor[0],
                       y= scoor[1],
                       img = store.image['space'],
-                      batch = store.map_bt ,id= inid) 
+                      batch = store.map_bt ,id= inid)
             store.add(sp_built,'spt')
         if type == 'wall':
             var_wall = ['wall','wall_v1']
@@ -48,7 +48,7 @@ class SelBuild(object):
                                     len(var_wall)-1)]
             buildloc.connect()._set_image(store.image[buildloc.img])
             buildloc.wadjl = level.adjlist(buildloc)
-            level.arrange(buildloc) 
+            level.arrange(buildloc)
         if type == 'door0':
             buildloc.occup = True
             buildloc.passable = False
@@ -57,7 +57,7 @@ class SelBuild(object):
             buildloc.img = 'door0'
             buildloc.connect()._set_image(store.image['door0'])
             buildloc.wadjl = level.adjlist(buildloc)
-            level.arrange(buildloc) 
+            level.arrange(buildloc)
         if type == 'door1':
             buildloc.occup = True
             buildloc.passable = True
@@ -66,7 +66,7 @@ class SelBuild(object):
             buildloc.img = 'door1'
             buildloc.connect()._set_image(store.image['door1'])
             buildloc.wadjl = level.adjlist(buildloc)
-            level.arrange(buildloc) 
+            level.arrange(buildloc)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
         overloc = findtile(coor)
@@ -80,15 +80,15 @@ class SelBuild(object):
                 type = 'none'
             overloc.occup = True
             if type == 'key':
-                key = Item(id=Item.objid, x=coor[0], y=coor[1], 
+                key = Item(id=Item.objid, x=coor[0], y=coor[1],
                            img='key',name='key',
                            loc=overloc,func='item_p')
                 overloc.overlays.append(key)
                 sp_overlay = Sp_Tile(x=store.ct(key.x),y=store.ct(key.y),
                                      img=getim(key),
                                      batch=store.item_bt,id=key.id,
-                                     ol=True) 
-                sp_overlays.append(sp_overlay)      
+                                     ol=True)
+                sp_overlays.append(sp_overlay)
                 Item.objid += 1
 class Button(object):
     def __init__(self,img,function=None):
@@ -98,12 +98,12 @@ class Button(object):
     def drawbut(self,o_coor):
         self.o_coor = o_coor
         button = pyglet.sprite.Sprite(x=o_coor[0],y=o_coor[1],
-                                      img=self.image[self.img], 
+                                      img=self.image[self.img],
                                       bt = store.menu_batch)
         sp_gui.append(button)
     def press(self):
         self.function()
-        print 'you pressed %s' % self.img
+        print ('you pressed %s' % self.img)
 class Gui(object):
     rcmhead = Button('c_menu')
     rcm = [False]
@@ -114,12 +114,12 @@ class Gui(object):
         self.orig = [0,0]
         self.size = [80,50]
         self.buttons = []
-        if gtype == 'rcm' and Cursor.onarea == 'l': 
+        if gtype == 'rcm' and Cursor.onarea == 'l':
                 Gui.rcm[0] = True
                 self.rightclickmenu()
     def rightclickmenu(self):
         for f in self.clickloc.functions:
-            if (max(prange(self.clickloc)) == 1 and 
+            if (max(prange(self.clickloc)) == 1 and
                 prange(self.clickloc)[0] != prange(self.clickloc)[1]):
                 if f.func == 'door' and f.locked == True:
                     unl_but = Button('c_unl',unlock)
@@ -128,23 +128,23 @@ class Gui(object):
                     lock_but = Button('c_lock',lock)
                     self.buttons.append(lock_but)
         for f in self.clickloc.overlays: #generator
-            if max(prange(self.clickloc)) == 0: 
+            if max(prange(self.clickloc)) == 0:
                 if hasattr(f,'func') and f.func == 'item_p':
                     pickup_but = Button('c_pickup',pickup)
                     self.buttons.append(pickup_but)
         self.fitmenu(len(self.buttons)+1)
         self.refresh_menu()
     def fitmenu(self,c):
-        fitx = False 
+        fitx = False
         fity = False
-        if (self.o_coor[0]+self.size[0] > 
+        if (self.o_coor[0]+self.size[0] >
             level.levelarea.coor[0][1]):
             fitx = True
-        if (self.o_coor[1]-self.size[1]*c < 
-            level.levelarea.coor[1][0]): 
+        if (self.o_coor[1]-self.size[1]*c <
+            level.levelarea.coor[1][0]):
             fity = True
         if fitx == True and fity == True:
-            self.o_coor[0] = self.o_coor[0]-self.size[0] 
+            self.o_coor[0] = self.o_coor[0]-self.size[0]
             self.o_coor[1] = self.o_coor[1]-self.size[1]*c
         elif fitx == True:
             self.o_coor[0] = self.o_coor[0]-self.size[0]
@@ -178,5 +178,5 @@ class Cursor(object):
         self.coor = [self.mposx,self.mposy]
         self.sp = pyglet.sprite.Sprite(x=self.mposx,
                                        y=self.mposy,
-                                     img=store.image['cursor'])   
+                                     img=store.image['cursor'])
         self.onarea = 'd'
