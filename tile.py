@@ -1,5 +1,5 @@
 import store
-class Tile(object): 
+class Tile(object):
     def __init__(self, img, id=0, coor=[], passable= True,
                  occup= False, tt= 's',overlays=None,
                  functions=None,adjl=None,wadjl=None,rot=0):
@@ -22,15 +22,15 @@ class Tile(object):
         #delete - removes sprite from list
         clist = None
         if ol == True:
-            clist = store.store['spo']
-        else: clist = store.store['spt']
+            clist = store.core.store['spo']
+        else: clist = store.core.store['spt']
         for sp_tile in clist:
             if sp_tile.id == self.id:
                 if (ol == True and sp_tile.ol == True):
                     if delete == True:
                         clist.remove(sp_tile)
                     return sp_tile
-                elif ol == False: 
+                elif ol == False:
                     if delete == True:
                         clist.remove(sp_tile)
                     return sp_tile
@@ -41,7 +41,7 @@ class Tile(object):
                 if check.coor[1]-self.coor[1] == -1:
                     self.dirs['yam'] = check
                     self.adjl.append(check)
-                else: 
+                else:
                     self.dirs['yap'] = check
                     self.adjl.append(check)
             elif (self.coor[1] == check.coor[1] and
@@ -49,7 +49,7 @@ class Tile(object):
                 if check.coor[0]-self.coor[0] == -1:
                     self.dirs['xam'] = check
                     self.adjl.append(check)
-                else: 
+                else:
                     self.dirs['xap'] = check
                     self.adjl.append(check)
             else:
