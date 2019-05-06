@@ -93,9 +93,9 @@ class Player(object):
                 costlist.append(path.cost)
             Path.cpath = Path.pl[costlist.index(min(costlist))]
             for node in Path.cpath.nodes:
-                tag = pyglet.sprite.Sprite(x= store.ct(node.coor[0]),
-                              y= store.ct(node.coor[1]),
-                              img = store.image ['marker2'],
+                tag = pyglet.sprite.Sprite(x= store.core.ct(node.coor[0]),
+                              y= store.core.ct(node.coor[1]),
+                              img = store.core.image ['marker2'],
                               bt = debug_batch)
                 Path.wp.append(tag)
     def moveg(self):
@@ -103,16 +103,16 @@ class Player(object):
         self.checkmv(self.loc,True)
         Path.tagged = list(set(Path.tagged))
         for tile in Path.tagged:
-            tag = pyglet.sprite.Sprite(x= store.ct(tile.coor[0]),
-                          y= store.ct(tile.coor[1]),
-                          img = store.image ['marker'],
+            tag = pyglet.sprite.Sprite(x= store.core.ct(tile.coor[0]),
+                          y= store.core.ct(tile.coor[1]),
+                          img = store.core.image ['marker'],
                           bt = debug_batch)
             Path.tags.append(tag)
         for tagged in Path.tagged:
             Path.ptagged.append(tagged)
         if ontiles([Cursor.mposx,Cursor.mposy],Path.ptagged):
             Path.clean_Path(tags=False)
-            Path.goal = store.findtile(Cursor.coor)
+            Path.goal = store.core.findtile(Cursor.coor)
             store.cplayer.pathing()
     def checkmv(self,tchk,first = False,pat=False,f=None):
         checkdirs = [tchk.dirs['xam'],tchk.dirs['xap'],
@@ -154,33 +154,33 @@ class Player(object):
         if not level.coll([self.coor[1]+1,self.coor[0]]):
             self.coor[1] += 1
             self.look = 'pcharB'
-            self.connect().image=store.image [self.look]
-            self.connect().y = store.ct(self.coor[1])
-            self.loc = store.findtile(self.coor)
+            self.connect().image=store.core.image [self.look]
+            self.connect().y = store.core.ct(self.coor[1])
+            self.loc = store.core.findtile(self.coor)
             controls.turn()
     def movedown(self):
         if not level.coll([self.coor[1]-1,self.coor[0]]):
             self.coor[1] -= 1
             self.look = 'pcharF'
-            self.connect().image=store.image [self.look]
-            self.connect().y = store.ct(self.coor[1])
-            self.loc = store.findtile(self.coor)
+            self.connect().image=store.core.image [self.look]
+            self.connect().y = store.core.ct(self.coor[1])
+            self.loc = store.core.findtile(self.coor)
             controls.turn()
     def moveleft(self):
         if not level.coll([self.coor[1],self.coor[0]-1]):
             self.coor[0] -= 1
             self.look = 'pcharR'
-            self.connect().image=store.image [self.look]
-            self.connect().x = store.ct(self.coor[0])
-            self.loc = store.findtile(self.coor)
+            self.connect().image=store.core.image [self.look]
+            self.connect().x = store.core.ct(self.coor[0])
+            self.loc = store.core.findtile(self.coor)
             controls.turn()
     def moveright(self):
         if not level.coll([self.coor[1],self.coor[0]+1]):
             self.coor[0] += 1
             self.look = 'pchar'
-            self.connect().image=store.image [self.look]
-            self.connect().x = store.ct(self.coor[0])
-            self.loc = store.findtile(self.coor)
+            self.connect().image=store.core.image [self.look]
+            self.connect().x = store.core.ct(self.coor[0])
+            self.loc = store.core.findtile(self.coor)
             controls.turn()
     def pmove(self,path,step):
         if Path.step < len(path):
@@ -190,9 +190,9 @@ class Player(object):
             Path.step = 0
             self.coor[0] = Path.goal.coor[0]
             self.coor[1] = Path.goal.coor[1]
-            self.loc = store.findtile(self.coor)
-            self.connect().x = store.ct(self.coor[0])
-            self.connect().y = store.ct(self.coor[1])
+            self.loc = store.core.findtile(self.coor)
+            self.connect().x = store.core.ct(self.coor[0])
+            self.connect().y = store.core.ct(self.coor[1])
             controls.turn()
     def addplayer(self):
         g_newplayer = Player(coor=[self.coor[0]+1,

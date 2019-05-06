@@ -1,4 +1,5 @@
 from tile import Tile
+import store
 class Item(Tile):
     def __init__(self,id,x,y,img,name='',loc='',func=None):
         self.id = id
@@ -40,11 +41,11 @@ class Door(object):
         if self.closed == False:
             loc.img = 'door0'
             loc.passable = False
-            loc.connect().image=self.image['door0']
+            loc.connect().image=store.core.image['door0']
             self.closed = True
         else:
             if self.locked == False:
                 loc.img = 'door1'
                 loc.passable = True
-                loc.connect().image=self.image['door1']
+                loc.connect().image=store.core.image['door1']
                 self.closed = False

@@ -4,6 +4,7 @@ import random
 import pyglet.window
 import store
 import sp
+import element
 
 class Level(pyglet.window.Window):
     def __init__(self,x=10,y=10,tset=None):
@@ -19,9 +20,6 @@ class Level(pyglet.window.Window):
         self.xcenter = self.xsize / 2
         self.ysize = self.height
         self.ycenter = self.ysize / 2
-        self.bmu()
-    def bmu(self):
-        self.buildmenu = SelBuild(self)
 
     # def on_resize(self,width,height):
     #     store.ts
@@ -63,10 +61,10 @@ class Level(pyglet.window.Window):
             gcoor= [gcoor[0]+1,gcoor[1]]
         for tile in store.core.store['gt']:
             tile.interlace(store.core.store['gt'])
-            sp_tile = self.buildmenu.build(tile,'space',
+            sp_tile = store.buildmenu.build(tile,'space',
                                            tile.coor,tile.id)
             if len(tile.adjl) != 8:
-                sp_tile = self.buildmenu.build(tile,'wall',
+                sp_tile = store.buildmenu.build(tile,'wall',
                                                tile.coor)
 class Gamearea(object):
     def __init__(self,id=None,name=None,coor=None):
@@ -213,13 +211,12 @@ def arrange(toarrange,fit=True):
     if fit == True:
         fitnext(toarrange.wadjl)
 class SelBuild(object):
-    def __init__(self,game_window):
-        self.game_window = game_window
+    def __init__(self):
         self.c = [0,False]
         self.blist = [['wall',0],['door0',0],['door1',0],['key',1]]
         self.label = pyglet.text.Label(self.blist[0][0],
-                'Courier_new',30, x= self.game_window.xcenter,
-                y = self.game_window.y * store.core.ts + 25,
+                'Courier_new',30, x= store.clevel.xcenter,
+                y = store.clevel.y * store.core.ts + 25,
                 anchor_x = 'center', anchor_y = 'center')
     def next(self):
         self.label.delete()
@@ -231,15 +228,16 @@ class SelBuild(object):
         self.label = pyglet.text.Label(
                                         self.blist[self.c[0]][0],
                                         'Courier_new',30,
-                                        x= self.game_window.xcenter,
-                                        y = self.game_window.y *
-                                        self.game_window.ts+25,
+                                        x= store.clevel.xcenter,
+                                        y = store.clevel.y *
+                                        store.core.ts+25,
                                         anchor_x = 'center',
                                         anchor_y = 'center')
     def build(self,buildloc,type,gcoor,inid=0):
-        sp_built = None
+        #sp_built = None
         scoor = [store.core.ct(gcoor[0]),
                  store.core.ct(gcoor[1])]
+        print("{}".format(buildloc))
         if type != 'space' and buildloc.occup == True:
             type = 'none'
         if type == 'space':
@@ -260,7 +258,7 @@ class SelBuild(object):
         if type == 'door0':
             buildloc.occup = True
             buildloc.passable = False
-            door = Door(loc=buildloc,closed=True)
+            door = element.Door(loc=buildloc,closed=True)
             buildloc.functions.append(door)
             buildloc.img = 'door0'
             buildloc.connect().image=store.core.image['door0']
@@ -269,7 +267,7 @@ class SelBuild(object):
         if type == 'door1':
             buildloc.occup = True
             buildloc.passable = True
-            door = Door(loc=buildloc)
+            door = element.Door(loc=buildloc)
             buildloc.functions.append(door)
             buildloc.img = 'door1'
             buildloc.connect().image=store.core.image['door1']
@@ -277,7 +275,7 @@ class SelBuild(object):
             arrange(buildloc)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
-        overloc = findtile(coor)
+        overloc = store.core.findtile(coor)
         lay = True
         for ol in overloc.overlays:
             if ol.name == type:
@@ -288,19 +286,20 @@ class SelBuild(object):
                 type = 'none'
             overloc.occup = True
             if type == 'key':
-                key = Item(id=Item.objid, x=coor[0], y=coor[1],
+                key = element.Item(id=element.Item.objid, x=coor[0], y=coor[1],
                            img='key',name='key',
                            loc=overloc,func='item_p')
                 overloc.overlays.append(key)
-                sp_overlay = Sp_Tile(x=store.ct(key.x),y=store.ct(key.y),
-                                     img=getim(key),
-                                     batch=store.item_bt,id=key.id,
-                                     ol=True)
-                sp_overlays.append(sp_overlay)
-                Item.objid += 1
+                sp_overlay = sp.Sp_Tile(x=store.core.ct(key.x),
+                                        y=store.core.ct(key.y),
+                                        img=store.core.getim(key),
+                                        batch=store.item_bt,id=key.id,
+                                        ol=True)
+                store.core.store['spo'].append(sp_overlay)
+                element.Item.objid += 1
 def coll(direc):
     collision = False
-    for g_tile in store.store['gt']:
+    for g_tile in store.core.store['gt']:
         if (g_tile.passable == False and
             g_tile.coor[1] == direc[0] and g_tile.coor[0] == direc[1]):
                 collision = True
@@ -324,45 +323,45 @@ def standon(tocheck, against):
     return standon
 def savelevel():
     savelev = open('saved_level','wb')
-    cPickle.dump(store.store['gt'], savelev)
-    cPickle.dump(store.store['gp'], savelev)
+    cPickle.dump(store.core.store['gt'], savelev)
+    cPickle.dump(store.core.store['gp'], savelev)
     savelev.close()
 def loadlevel():
     dellevel()
-    for sp_overlay in store.store['spo']:
+    for sp_overlay in store.core.store['spo']:
         sp_overlay.delete()
-    del store.store['spo'][:]
-    del store.store['gp'][:]
+    del store.core.store['spo'][:]
+    del store.core.store['gp'][:]
     loadlev = open('saved_level','rb')
-    store.store['gt'] = cPickle.load(loadlev)
-    store.store['gp'] = cPickle.load(loadlev)
-    for g_tile in store.store['gt']:
+    store.core.store['gt'] = cPickle.load(loadlev)
+    store.core.store['gp'] = cPickle.load(loadlev)
+    for g_tile in store.core.store['gt']:
         sp_tile = Sp_Tile(x=clevel.ct(g_tile.coor[0]), y=clevel.ct(g_tile.coor[1]),
                           img=getim(g_tile),
                           bt= store.map_batch,id=g_tile.id)
         sp_tile.rotation=g_tile.rot
-        store.store['spt'].append(sp_tile)
+        store.core.store['spt'].append(sp_tile)
         if g_tile.overlays:
             for ol in g_tile.overlays:
                 sp_overlay = Sp_Tile(x=clevel.ct(ol.x),y=clevel.ct(ol.y),
                                      img=getim(ol),
                                      bt=store.item_batch,id=ol.id,
                                      ol=True)
-                store.store['spo'].append(sp_overlay)
-    for g_player in store.store['gp']:
+                store.core.store['spo'].append(sp_overlay)
+    for g_player in store.core.store['gp']:
         sp_overlay = Sp_Tile(x=clevel.ct(g_player.coor[0]),
                              y=clevel.ct(g_player.coor[1]),
                              img = getim(g_player),
                              id= g_player.id,
                              bt = store.player_batch)
-        store.store['spo'].append(sp_overlay)
+        store.core.store['spo'].append(sp_overlay)
     loadlev.close()
 def dellevel(delol=False):
     if delol == True:
-        store.store['spo'][:] = [ol for ol in
-                               List.sp_overlays if not
+        store.core.store['spo'][:] = [ol for ol in
+                               core.store['spo'] if not
                                det_ol(ol)]
-    for sp_tile in store.store['spt']:
+    for sp_tile in store.core.store['spt']:
         sp_tile.delete()
-    del store.store['spt'][:]
-    del store.store['gt'][:]
+    del store.core.store['spt'][:]
+    del store.core.store['gt'][:]

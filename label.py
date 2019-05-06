@@ -1,7 +1,7 @@
 import pyglet
 import controls
 import store
-#from pyglet.text import label
+
 class Label(object):
     @staticmethod
     def create(label,clean):
