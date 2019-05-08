@@ -49,3 +49,13 @@ class Door(object):
                 loc.passable = True
                 loc.connect().image=store.core.image['door1']
                 self.closed = False
+def lock():
+    getfunc('door').locked = True
+def unlock():
+    getfunc('door').locked = False
+def pickup():
+    store.delol(store.rcm[1].clickloc,store.getol('item_p'))
+def getfunc(funct):
+    for func in store.rcm[1].clickloc.functions:
+        if func.func == funct:
+            return func

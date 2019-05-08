@@ -237,7 +237,6 @@ class SelBuild(object):
         #sp_built = None
         scoor = [store.core.ct(gcoor[0]),
                  store.core.ct(gcoor[1])]
-        print("{}".format(buildloc))
         if type != 'space' and buildloc.occup == True:
             type = 'none'
         if type == 'space':
@@ -280,7 +279,7 @@ class SelBuild(object):
         for ol in overloc.overlays:
             if ol.name == type:
                 lay = False
-                delol(overloc,ol)
+                store.delol(overloc,ol)
         if lay == True:
             if overloc.occup == True:
                 type = 'none'

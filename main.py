@@ -44,31 +44,13 @@ def ontiles(m_coor,tiles):
             m_coor[1] >= store.clevel.ct(tile.coor[1])-self.anctile and
             m_coor[1] <= store.clevel.ct(tile.coor[1])+self.anctile):
             return True
-def delol(overloc,ol):
-    ol.connect(True,delete=True).delete()
-    overloc.overlays.remove(ol)
-    if len(overloc.overlays) == 0:
-        overloc.occup = False
+
         #NO return?
         #Deletes overlays from tile and makes it unoccopied
-def prange(loc):
-    range = store.core.cplayer.distance(loc)
-    # range[0] = distance in absolute units on x axis [1] = y axis
-    return range
-def getfunc(funct):
-    for func in Gui.rcm[1].clickloc.functions:
-        if func.func == funct:
-            return func
-def getol(funct):
-    for ol in Gui.rcm[1].clickloc.overlays:
-        if ol.func == funct:
-            return ol
-def lock():
-    getfunc('door').locked = True
-def unlock():
-    getfunc('door').locked = False
-def pickup():
-    delol(Gui.rcm[1].clickloc,getol('item_p'))
+
+
+
+
 class Path(object):
     cost = 0
     tagged = []
@@ -240,10 +222,10 @@ def on_mouse_motion(x,y,dx,dy):
 def on_mouse_press(x,y,button,modifiers):
     clickloc = store.core.findtile(store.cursor.coor)
     if button == mouse.LEFT:
-        if (gui.Gui.rcm[0] and gui.inarea(store.cursor.coor,
+        if (store.rcm[0] and gui.inarea(store.cursor.coor,
             store.clevel.levelarea)):
-            gui.Gui.rcm[1].click([x,y])
-        elif (not gui.Gui.rcm[0] and gui.inarea(store.cursor.coor,
+            store.rcm[1].click([x,y])
+        elif (not store.rcm[0] and gui.inarea(store.cursor.coor,
             store.clevel.levelarea)):
             for func in clickloc.functions:
                 if (func.func == 'door' and
@@ -259,12 +241,12 @@ def on_mouse_press(x,y,button,modifiers):
                                 #store.core.cplayer,g_tile)
     elif button == mouse.RIGHT:
         if gui.inarea([x,y],store.clevel.levelarea):
-            print ('MENNU')
-            if gui.Gui.rcm[0]:
+            # menu appears only when right clicked
+            # on actual level area of window
+            if store.rcm[0]:
                gui.Gui.killrcm()
-            rcm = Gui([x,y],'rcm',clickloc)
-            gui.Gui.rcm.append(rcm)
-        else: print ('NOMENU')
+            rcm = gui.Gui([x,y],'rcm',clickloc)
+            store.rcm.append(rcm)
     elif button == mouse.MIDDLE:
         print (len(clickloc.functions))
 if __name__ == '__main__':
