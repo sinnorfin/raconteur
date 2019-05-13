@@ -5,6 +5,7 @@ import store
 import math
 import level
 ##import label
+#Probably no need for these
 class Vars(object):
     def __init__(self):
         waypoint = False
@@ -15,7 +16,7 @@ class Vars(object):
         distances = []
         xlist = []
         ylist = []
-        handleraltered = False
+
 
 def turn():
     store.core.inturn += 1

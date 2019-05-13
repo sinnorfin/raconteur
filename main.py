@@ -31,104 +31,53 @@ class Game(object):
         store.buildmenu = level.SelBuild()
         store.clevel.levelgen()
         store.cursor = gui.Cursor()
+        store.handleraltered = False;
         g_player = player.Player(coor=[1,1],img='pchar',id=1)
         store.core.cplayer = store.core.store['gp'][store.core.inturn]
         controls.sp_topath = store.core.cplayer
         controls.goal = store.core.cplayer
 
-        #NO class functions?
-def ontiles(m_coor,tiles):
-    for tile in tiles:
-        if (m_coor[0] >= store.clevel.ct(tile.coor[0])-self.anctile and
-            m_coor[0] <= store.clevel.ct(tile.coor[0])+self.anctile and
-            m_coor[1] >= store.clevel.ct(tile.coor[1])-self.anctile and
-            m_coor[1] <= store.clevel.ct(tile.coor[1])+self.anctile):
-            return True
-
-        #NO return?
-        #Deletes overlays from tile and makes it unoccopied
-
-
-
-
-class Path(object):
-    cost = 0
-    tagged = []
-    ptagged = []
-    tags = []
-    wp = []
-    goal = None
-    pl = []
-    cpath = None
-    anim = False
-    step = 0
-    @staticmethod
-    def clean_Path(tags=True):
-        Path.cost = 0
-        Path.tagged[:] = []
-        Path.pl[:] = []
-        if Path.wp:
-            for wp in Path.wp:
-                wp.delete
-        del Path.wp[:]
-        if tags == True:
-            for tag in Path.tags:
-                tag.delete()
-            del Path.tags[:]
-    @staticmethod
-    def on_key_press(symbol,modifiers):
-        if symbol == key.ESCAPE:
-            self.game_window.pop_handlers()
-            control.handleraltered = False
-            Path.clean_Path()
-            del Path.ptagged[:]
-            return True
-    @staticmethod
-    def on_mouse_press(x,y,button,modifiers):
-        if button == mouse.LEFT:
-            if ontiles([x,y],Path.ptagged):
-                Path.clean_Path()
-                Path.goal = store.core.findtile(Cursor.coor)
-                store.core.cplayer.pathing()
-                store.core.cplayer.pmove(Path.cpath.nodes,
-                                            Path.step)
-                del Path.ptagged[:]
-                Path.clean_Path()
-                self.game_window.pop_handlers()
-                control.handleraltered = False
-            return True
-    def __init__(self,cost,nodes):
-        self.cost = cost
-        self.nodes = nodes
 class Anim(object):
     @staticmethod
     def movetoward(goal,animated):
         if (animated.x == goal.x and
             animated.y == goal.y):
-            Path.anim = False
-            Path.step += 1
-            store.core.cplayer.pmove(Path.cpath.nodes,Path.step)
+            player.Path.anim = False
+            player.Path.step += 1
+            store.core.cplayer.pmove(player.Path.cpath.nodes,
+                                    player.Path.step)
         if animated.x < goal.x:
             store.core.cplayer.look = 'pchar'
-            animated.image=self.image[store.core.cplayer.look]
+            animated.image=store.core.image[
+                                    store.core.cplayer.look]
             animated.x += 10
         if animated.y < goal.y:
             store.core.cplayer.look = 'pcharB'
-            animated.image=self.image[store.core.cplayer.look]
+            animated.image=store.core.image[
+                                    store.core.cplayer.look]
             animated.y += 10
         if animated.x > goal.x:
             store.core.cplayer.look = 'pcharR'
-            animated.image=self.image[store.core.cplayer.look]
+            animated.image=store.core.image[
+                                    store.core.cplayer.look]
             animated.x -= 10
         if animated.y > goal.y:
             store.core.cplayer.look = 'pcharF'
-            animated.image=self.image[store.core.cplayer.look]
+            animated.image=store.core.image[
+                                    store.core.cplayer.look]
             animated.y -= 10
 def update(dt):
-    if Path.anim == True:
-        Anim.movetoward(Path.node.connect(),
-                        store.core.cplayer.connect())
+    if player.Path.anim == True:
+        Anim.movetoward(player.Path.node.connect(),
+                        store.core.cplayer.sp)
 game = Game()
+
+def pushhandlers(Class):
+    if store.handleraltered == True:
+        store.clevel.pop_handlers()
+        store.handleraltered = False
+    store.clevel.push_handlers(Class)
+    store.handleraltered = True
 @store.clevel.event
 def on_draw():
     #separate dynamic from static -optimization
@@ -198,7 +147,7 @@ def on_key_press(symbol,modifiers):
         pushhandlers(Typein)
         Typein.firstt = True
     elif symbol == key.M:
-        pushhandlers(Path)
+        pushhandlers(player.Path)
         store.core.cplayer.moveg()
 @store.clevel.event
 def on_mouse_motion(x,y,dx,dy):

@@ -1,6 +1,8 @@
 import store
 import controls
 import level
+import pyglet.sprite
+from pyglet.window import mouse
 
 from sp import Sp_Tile
 cid = 2
@@ -22,6 +24,8 @@ class Player(object):
                             batch = store.player_bt)
         store.core.add(self,'gp')
         store.core.add(self.sp,'spo')
+
+    #probably defunct now, replace all connect with gameelement.sp
     def connect(self):
         for sp_overlay in store.core.store['spo']:
             if (sp_overlay.id == self.id and
@@ -96,7 +100,7 @@ class Player(object):
                 tag = pyglet.sprite.Sprite(x= store.core.ct(node.coor[0]),
                               y= store.core.ct(node.coor[1]),
                               img = store.core.image ['marker2'],
-                              bt = debug_batch)
+                              batch = store.debug_bt)
                 Path.wp.append(tag)
     def moveg(self):
         Path.clean_Path()
@@ -106,14 +110,14 @@ class Player(object):
             tag = pyglet.sprite.Sprite(x= store.core.ct(tile.coor[0]),
                           y= store.core.ct(tile.coor[1]),
                           img = store.core.image ['marker'],
-                          bt = debug_batch)
+                          batch = store.debug_bt)
             Path.tags.append(tag)
         for tagged in Path.tagged:
             Path.ptagged.append(tagged)
-        if ontiles([Cursor.mposx,Cursor.mposy],Path.ptagged):
+        if level.ontiles([store.cursor.mposx,store.cursor.mposy],Path.ptagged):
             Path.clean_Path(tags=False)
-            Path.goal = store.core.findtile(Cursor.coor)
-            store.cplayer.pathing()
+            Path.goal = store.core.findtile(store.cursor.coor)
+            store.core.cplayer.pathing()
     def checkmv(self,tchk,first = False,pat=False,f=None):
         checkdirs = [tchk.dirs['xam'],tchk.dirs['xap'],
                      tchk.dirs['yam'],tchk.dirs['yap']]
@@ -154,7 +158,8 @@ class Player(object):
         if not level.coll([self.coor[1]+1,self.coor[0]]):
             self.coor[1] += 1
             self.look = 'pcharB'
-            self.connect().image=store.core.image [self.look]
+            #self.connect().image=store.core.image [self.look]
+            self.sp.image=store.core.image [self.look]
             self.connect().y = store.core.ct(self.coor[1])
             self.loc = store.core.findtile(self.coor)
             controls.turn()
@@ -198,3 +203,52 @@ class Player(object):
         g_newplayer = Player(coor=[self.coor[0]+1,
                              self.coor[1]+1],img='pchar',id=cid)
         cid +=1
+class Path(object):
+    cost = 0
+    tagged = []
+    ptagged = []
+    tags = []
+    wp = []
+    goal = None
+    pl = []
+    cpath = None
+    anim = False
+    step = 0
+    @staticmethod
+    def clean_Path(tags=True):
+        Path.cost = 0
+        Path.tagged[:] = []
+        Path.pl[:] = []
+        if Path.wp:
+            for wp in Path.wp:
+                wp.delete
+        del Path.wp[:]
+        if tags == True:
+            for tag in Path.tags:
+                tag.delete()
+            del Path.tags[:]
+    @staticmethod
+    def on_key_press(symbol,modifiers):
+        if symbol == key.ESCAPE:
+            self.game_window.pop_handlers()
+            store.handleraltered = False
+            Path.clean_Path()
+            del Path.ptagged[:]
+            return True
+    @staticmethod
+    def on_mouse_press(x,y,button,modifiers):
+        if button == mouse.LEFT:
+            if level.ontiles([x,y],Path.ptagged):
+                Path.clean_Path()
+                Path.goal = store.core.findtile(store.cursor.coor)
+                store.core.cplayer.pathing()
+                store.core.cplayer.pmove(Path.cpath.nodes,
+                                            Path.step)
+                del Path.ptagged[:]
+                Path.clean_Path()
+                store.clevel.pop_handlers()
+                store.handleraltered = False
+            return True
+    def __init__(self,cost,nodes):
+        self.cost = cost
+        self.nodes = nodes

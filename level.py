@@ -23,7 +23,7 @@ class Level(pyglet.window.Window):
 
     # def on_resize(self,width,height):
     #     store.ts
-    #     store.ats
+    #     store.core.ats
     #     self.xsize
     #     self.ysize
     #     if width - 50 > self.xsize or width + 50 < self.xsize:
@@ -33,7 +33,7 @@ class Level(pyglet.window.Window):
     #         scaletoint = float(scaletoint)/10000
     #         glscalef(scaletoint, scaletoint, scaletoint)
     #         store.ts = store.ts * scaletoint
-    #         store.ats = store.ts/2
+    #         store.core.ats = store.ts/2
     #         cursor.cursor.x = cursor.cursor.x * scaletoint
     #         cursor.cursor.y = cursor.cursor.y * scaletoint
     #         #cursor.mposx = cursor.mposx * scaletoint
@@ -261,7 +261,7 @@ class SelBuild(object):
             buildloc.functions.append(door)
             buildloc.img = 'door0'
             buildloc.connect().image=store.core.image['door0']
-            buildloc.wadjl = level.adjlist(buildloc)
+            buildloc.wadjl = adjlist(buildloc)
             arrange(buildloc)
         if type == 'door1':
             buildloc.occup = True
@@ -314,6 +314,13 @@ def ctile(gcoor,genid):
                    len(var_space)-1)],
                    id=genid,coor=gcoor,occup=False)
     return g_gen
+def ontiles(m_coor,tiles):
+    for tile in tiles:
+        if (m_coor[0] >= store.core.ct(tile.coor[0])-store.core.ats and
+            m_coor[0] <= store.core.ct(tile.coor[0])+store.core.ats and
+            m_coor[1] >= store.core.ct(tile.coor[1])-store.core.ats and
+            m_coor[1] <= store.core.ct(tile.coor[1])+store.core.ats):
+            return True
 def standon(tocheck, against):
     if (against.coor[0] == tocheck.x and
         against.coor[1] == tocheck.y) :
@@ -335,21 +342,21 @@ def loadlevel():
     store.core.store['gt'] = cPickle.load(loadlev)
     store.core.store['gp'] = cPickle.load(loadlev)
     for g_tile in store.core.store['gt']:
-        sp_tile = Sp_Tile(x=clevel.ct(g_tile.coor[0]), y=clevel.ct(g_tile.coor[1]),
+        sp_tile = Sp_Tile(x=store.core.ct(g_tile.coor[0]), y=store.core.ct(g_tile.coor[1]),
                           img=getim(g_tile),
                           bt= store.map_batch,id=g_tile.id)
         sp_tile.rotation=g_tile.rot
         store.core.store['spt'].append(sp_tile)
         if g_tile.overlays:
             for ol in g_tile.overlays:
-                sp_overlay = Sp_Tile(x=clevel.ct(ol.x),y=clevel.ct(ol.y),
+                sp_overlay = Sp_Tile(x=store.core.ct(ol.x),y=store.core.ct(ol.y),
                                      img=getim(ol),
                                      bt=store.item_batch,id=ol.id,
                                      ol=True)
                 store.core.store['spo'].append(sp_overlay)
     for g_player in store.core.store['gp']:
-        sp_overlay = Sp_Tile(x=clevel.ct(g_player.coor[0]),
-                             y=clevel.ct(g_player.coor[1]),
+        sp_overlay = Sp_Tile(x=store.core.ct(g_player.coor[0]),
+                             y=store.core.ct(g_player.coor[1]),
                              img = getim(g_player),
                              id= g_player.id,
                              bt = store.player_batch)
