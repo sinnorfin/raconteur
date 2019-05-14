@@ -296,6 +296,26 @@ class SelBuild(object):
                                         ol=True)
                 store.core.store['spo'].append(sp_overlay)
                 element.Item.objid += 1
+class Spawn(object):
+    reiterlist = []
+    @staticmethod
+    def g_object(num,type = ''):
+        reiter = 0
+        if type == 'wall':
+            genloclist = []
+            for genloc in store.core.store['gt']:
+                if genloc.occup == False:
+                    genloclist.append(genloc)
+            limit = len(genloclist)
+            if num > limit: num = limit
+            for i in range(num):
+                genloc = genloclist[random.randint(0,len(genloclist)-1)]
+                if genloc.occup == False :
+                    store.buildmenu.build(genloc,'wall',genloc.coor)
+                else: reiter += 1
+            if reiter != 0:
+                Spawn.g_object(reiter,type=type)
+#Spawn.g_object(3,type = 'wall')
 def coll(direc):
     collision = False
     for g_tile in store.core.store['gt']:
@@ -365,8 +385,8 @@ def loadlevel():
 def dellevel(delol=False):
     if delol == True:
         store.core.store['spo'][:] = [ol for ol in
-                               core.store['spo'] if not
-                               det_ol(ol)]
+                               store.core.store['spo'] if not
+                               store.det_ol(ol)]
     for sp_tile in store.core.store['spt']:
         sp_tile.delete()
     del store.core.store['spt'][:]

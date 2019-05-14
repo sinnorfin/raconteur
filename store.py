@@ -51,3 +51,7 @@ def delol(g_tile,ol):
     g_tile.overlays.remove(ol)
     if len(g_tile.overlays) == 0:
         g_tile.occup = False
+def det_ol(sp_tile):
+    if sp_tile.ol:
+        sp_tile.delete()
+        return True

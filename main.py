@@ -1,13 +1,14 @@
 # RACONTEUR V0.035
 import pyglet
 import math
-import random
+
 
 import store
 import player
 import gui
 import controls
 import level
+import element
 
 from pyglet.window import key
 from pyglet.window import mouse
@@ -123,22 +124,22 @@ def on_key_press(symbol,modifiers):
                                     store.core.cplayer.coor),
                                     store.buildmenu.blist[
                                     store.buildmenu.c[0]][0],
-                                    store.core.cplayer.coor,)
+                                    store.core.cplayer.coor)
                 controls.turn()
     elif symbol == key.P:
         store.core.cplayer.addplayer()
     elif symbol == key.DELETE:
-        dellevel(delol=True)
-        game.newlevel()
+        level.dellevel(delol=True)
+        store.clevel.levelgen()
     elif symbol == key.R:
-        dellevel(delol=True)
-        game.newlevel()
-        Spawn.g_object(8,type = 'wall')
+        level.dellevel(delol=True)
+        store.clevel.levelgen()
+        level.Spawn.g_object(8,type = 'wall')
     elif symbol == key.S:
         store.clevel.savelevel()
     elif symbol == key.L:
         store.clevel.loadlevel()
-        turn()
+        controls.turn()
     elif symbol == key.Q:
         store.buildmenu.next()
     elif symbol == key.O:

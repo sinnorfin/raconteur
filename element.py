@@ -1,5 +1,6 @@
 from tile import Tile
 import store
+import random
 class Item(Tile):
     def __init__(self,id,x,y,img,name='',loc='',func=None):
         self.id = id
@@ -10,26 +11,7 @@ class Item(Tile):
         self.loc = loc
         self.func = func
     objid = 0
-class Spawn(object):
-    reiterlist = []
-    @staticmethod
-    def g_object(num,type = ''):
-        reiter = 0
-        if type == 'wall':
-            genloclist = []
-            for genloc in store.store['gt']:
-                if genloc.occup == False:
-                    genloclist.append(genloc)
-            limit = len(genloclist)
-            if num > limit: num = limit
-            for i in range(num):
-                genloc = genloclist[random.randint(0,len(genloclist)-1)]
-                if genloc.occup == False :
-                    SelBuild.build('wall',genloc.coor)
-                else: reiter += 1
-            if reiter != 0:
-                Spawn.g_object(reiter,type=type)
-#Spawn.g_object(3,type = 'wall')
+
 class Door(object):
     def __init__(self,func='door',loc=0,
                  closed= False,locked = False):
