@@ -9,6 +9,7 @@ import gui
 import controls
 import level
 import element
+import label
 
 from pyglet.window import key
 from pyglet.window import mouse
@@ -36,8 +37,9 @@ class Game(object):
         g_player = player.Player(coor=[1,1],img='pchar',id=1)
         store.core.cplayer = store.core.store['gp'][store.core.inturn]
         controls.sp_topath = store.core.cplayer
+        store.cid = 2
         controls.goal = store.core.cplayer
-
+        label.create('New')
 class Anim(object):
     @staticmethod
     def movetoward(goal,animated):
@@ -145,8 +147,8 @@ def on_key_press(symbol,modifiers):
     elif symbol == key.O:
         print (len(store.core.cplayer.player_bordering()))
     elif symbol == key.T:
-        pushhandlers(Typein)
-        Typein.firstt = True
+        pushhandlers(label.Typein)
+        label.Typein.firstt = True
     elif symbol == key.M:
         pushhandlers(player.Path)
         store.core.cplayer.moveg()

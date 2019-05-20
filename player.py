@@ -3,9 +3,10 @@ import controls
 import level
 import pyglet.sprite
 from pyglet.window import mouse
+from pyglet.window import key
 
 from sp import Sp_Tile
-cid = 2
+
 class Player(object):
     def __init__(self, coor, img, id=0,name = 'Player',
                  inv=None):
@@ -34,7 +35,7 @@ class Player(object):
     def cols(self):
         collision = False
         for g_tile in store.core.store['gt']:
-            if (g_tile.passable == False and
+            if (g_tile.pfassable == False and
                 g_tile.coor == self.coor):
                     collision = True
             else:collision = False
@@ -201,8 +202,8 @@ class Player(object):
             controls.turn()
     def addplayer(self):
         g_newplayer = Player(coor=[self.coor[0]+1,
-                             self.coor[1]+1],img='pchar',id=cid)
-        cid +=1
+                             self.coor[1]+1],img='pchar',id=store.cid)
+        store.cid +=1
 class Path(object):
     cost = 0
     tagged = []
