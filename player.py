@@ -1,4 +1,5 @@
 import store
+import math
 import controls
 import level
 import pyglet.sprite
@@ -35,7 +36,7 @@ class Player(object):
     def cols(self):
         collision = False
         for g_tile in store.core.store['gt']:
-            if (g_tile.pfassable == False and
+            if (g_tile.passable == False and
                 g_tile.coor == self.coor):
                     collision = True
             else:collision = False
@@ -236,6 +237,27 @@ class Path(object):
             Path.clean_Path()
             del Path.ptagged[:]
             return True
+    @staticmethod
+    def on_mouse_motion(x,y,dx,dy):
+        if (x+store.core.ats > store.cursor.mposx + store.core.ts or
+            x+store.core.ats < store.cursor.mposx or
+            y+store.core.ats > store.cursor.mposy + store.core.ts or
+            y+store.core.ats < store.cursor.mposy ):
+            if level.ontiles([x,y],Path.ptagged):
+                store.cursor.xcoor = math.floor(x/store.core.ts)
+                store.cursor.ycoor = math.floor(y/store.core.ts)
+                store.cursor.cursor = pyglet.sprite.Sprite(
+                             x =store.core.ct(store.cursor.xcoor),
+                             y =store.core.ct(store.cursor.ycoor),
+                             img = store.core.image['cursor'])
+                store.cursor.mposx = x
+                store.cursor.mposy = y
+                store.cursor.coor = [store.cursor.xcoor, store.cursor.ycoor]
+                store.cursor.onarea = 'm'
+                Path.clean_Path(tags=False)
+                Path.goal = store.core.findtile(store.cursor.coor)
+                store.core.cplayer.pathing()
+        return True
     @staticmethod
     def on_mouse_press(x,y,button,modifiers):
         if button == mouse.LEFT:
