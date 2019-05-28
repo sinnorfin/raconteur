@@ -349,8 +349,10 @@ def standon(tocheck, against):
     return standon
 def savelevel():
     savelev = open('saved_level','wb')
-    cPickle.dump(store.core.store['gt'], savelev)
-    cPickle.dump(store.core.store['gp'], savelev)
+    saved_tiles = store.core.store['gt']
+    cPickle.dump(saved_tiles,savelev)
+    for player in store.core.store['gp']:
+        cPickle.dump(player,savelev)
     savelev.close()
 def loadlevel():
     dellevel()

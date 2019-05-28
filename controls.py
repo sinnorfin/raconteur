@@ -4,17 +4,6 @@ import store
 import math
 import level
 
-class Vars(object):
-    def __init__(self):
-        waypoint = False
-        sp_topath = ''
-        goal = ''
-        goalwp = ''
-        obstacles = []
-        distances = []
-        xlist = []
-        ylist = []
-
 def turn():
     store.core.inturn += 1
     playnum = len(store.core.store['gp'])

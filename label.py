@@ -7,7 +7,7 @@ def create(label):
     store.playername_label = pyglet.text.Label(label,
                                     'Courier_new',30,
                                     x= store.clevel.width,
-                                    y = store.clevel.ysize*
+                                    y = store.clevel.y*
                                     store.core.ts+25,
                                     anchor_x = 'right',
                                     anchor_y = 'center',
@@ -30,7 +30,7 @@ class Typein(object):
             store.playername_label.text = Typein.text
             Typein.text =''
             store.clevel.pop_handlers()
-            controls.handleraltered = False
+            store.handleraltered = False
         elif symbol == key.BACKSPACE:
             Typein.text = Typein.text[:-1]
             store.playername_label.text = Typein.text

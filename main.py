@@ -40,7 +40,7 @@ class Game(object):
         controls.sp_topath = store.core.cplayer
         store.cid = 2
         controls.goal = store.core.cplayer
-        label.create('New')
+        label.create(store.core.cplayer.name)
 class Anim(object):
     @staticmethod
     def movetoward(goal,animated):
@@ -139,17 +139,17 @@ def on_key_press(symbol,modifiers):
         store.clevel.levelgen()
         level.Spawn.g_object(8,type = 'wall')
     elif symbol == key.S:
-        store.clevel.savelevel()
+        level.savelevel()
     elif symbol == key.L:
-        store.clevel.loadlevel()
+        level.loadlevel()
         controls.turn()
     elif symbol == key.Q:
         store.buildmenu.next()
     elif symbol == key.O:
         print (len(store.core.cplayer.player_bordering()))
     elif symbol == key.T:
-        pushhandlers(label.Typein)
         label.Typein.firstt = True
+        pushhandlers(label.Typein)
     elif symbol == key.M:
         pushhandlers(player.Path)
         store.core.cplayer.moveg()
