@@ -20,27 +20,23 @@ from pyglet.gl import *
 glEnable(GL_TEXTURE_2D)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                 GL_NEAREST)
-class Game(object):
-    def __init__(self):
-        pyglet.resource.path = ['res']
-        pyglet.resource.reindex()
+def game():
         store.map_bt = pyglet.graphics.Batch()
         store.item_bt = pyglet.graphics.Batch()
         store.player_bt = pyglet.graphics.Batch()
         store.menu_bt = pyglet.graphics.Batch()
         store.debug_bt = pyglet.graphics.Batch()
-        store.core = store.Store()
         store.clevel = level.Level()
         store.buildmenu = level.SelBuild()
         store.clevel.levelgen()
         store.cursor = gui.Cursor()
         store.handleraltered = False;
         g_player = player.Player(coor=[1,1],img='pchar',id=1)
-        store.core.cplayer = store.core.store['gp'][store.core.inturn]
-        controls.sp_topath = store.core.cplayer
+        store.cplayer = store.store['gp'][store.inturn]
+        controls.sp_topath = store.cplayer
         store.cid = 2
-        controls.goal = store.core.cplayer
-        label.create(store.core.cplayer.name)
+        controls.goal = store.cplayer
+        label.create(store.cplayer.name)
 class Anim(object):
     @staticmethod
     def movetoward(goal,animated):
@@ -48,33 +44,29 @@ class Anim(object):
             animated.y == goal.y):
             player.Path.anim = False
             player.Path.step += 1
-            store.core.cplayer.pmove(player.Path.cpath.nodes,
+            store.cplayer.pmove(player.Path.cpath.nodes,
                                     player.Path.step)
         if animated.x < goal.x:
-            store.core.cplayer.look = 'pchar'
-            animated.image=store.core.image[
-                                    store.core.cplayer.look]
+            store.cplayer.look = 'pchar'
+            animated.image=store.image[store.cplayer.look]
             animated.x += 10
         if animated.y < goal.y:
-            store.core.cplayer.look = 'pcharB'
-            animated.image=store.core.image[
-                                    store.core.cplayer.look]
+            store.cplayer.look = 'pcharB'
+            animated.image=store.image[store.cplayer.look]
             animated.y += 10
         if animated.x > goal.x:
-            store.core.cplayer.look = 'pcharR'
-            animated.image=store.core.image[
-                                    store.core.cplayer.look]
+            store.cplayer.look = 'pcharR'
+            animated.image=store.image[store.cplayer.look]
             animated.x -= 10
         if animated.y > goal.y:
-            store.core.cplayer.look = 'pcharF'
-            animated.image=store.core.image[
-                                    store.core.cplayer.look]
+            store.cplayer.look = 'pcharF'
+            animated.image=store.image[store.cplayer.look]
             animated.y -= 10
 def update(dt):
     if player.Path.anim == True:
-        Anim.movetoward(player.Path.node.connect(),
-                        store.core.cplayer.sp)
-game = Game()
+        Anim.movetoward(player.Path.node.sp,
+                        store.cplayer.sp)
+game()
 
 def pushhandlers(Class):
     if store.handleraltered == True:
@@ -96,41 +88,41 @@ def on_draw():
 @store.clevel.event
 def on_key_press(symbol,modifiers):
     if symbol == key.UP:
-        store.core.cplayer.moveup()
+        store.cplayer.moveup()
     elif symbol == key.DOWN:
-        store.core.cplayer.movedown()
+        store.cplayer.movedown()
     elif symbol == key.LEFT:
-        store.core.cplayer.moveleft()
+        store.cplayer.moveleft()
     elif symbol == key.RIGHT:
-        store.core.cplayer.moveright()
+        store.cplayer.moveright()
     elif symbol == key.SPACE:
-        if not store.core.cplayer.cols():
-            if store.core.cplayer.img == 'pchar':
-                store.core.cplayer.connect().image= store.core.image['pchar_1b']
-                store.core.cplayer.img = 'pchar_1b'
+        if not store.cplayer.cols():
+            if store.cplayer.img == 'pchar':
+                store.cplayer.sp.image= store.image['pchar_1b']
+                store.cplayer.img = 'pchar_1b'
             else:
-                store.core.cplayer.connect().image= store.core.image['pchar']
-                store.core.cplayer.img = 'pchar'
+                store.cplayer.sp.image= store.image['pchar']
+                store.cplayer.img = 'pchar'
             controls.turn()
     elif symbol == key.B:
-        if not store.core.cplayer.cols():
+        if not store.cplayer.cols():
             if store.buildmenu.c[1] == 1:
-                store.buildmenu.overlay(store.core.findtile(
-                                    store.core.cplayer.coor),
+                store.buildmenu.overlay(store.findtile(
+                                    store.cplayer.coor),
                                     store.buildmenu.blist[
                                     store.buildmenu.c[0]][0],
-                        store.core.cplayer.coor)
+                        store.cplayer.coor)
                 controls.turn()
             else:
                 store.buildmenu.build(
-                                    store.core.findtile(
-                                    store.core.cplayer.coor),
+                                    store.findtile(
+                                    store.cplayer.coor),
                                     store.buildmenu.blist[
                                     store.buildmenu.c[0]][0],
-                                    store.core.cplayer.coor)
+                                    store.cplayer.coor)
                 controls.turn()
     elif symbol == key.P:
-        store.core.cplayer.addplayer()
+        store.cplayer.addplayer()
     elif symbol == key.DELETE:
         level.dellevel(delol=True)
         store.clevel.levelgen()
@@ -146,26 +138,26 @@ def on_key_press(symbol,modifiers):
     elif symbol == key.Q:
         store.buildmenu.next()
     elif symbol == key.O:
-        print (len(store.core.cplayer.player_bordering()))
+        print (len(store.cplayer.player_bordering()))
     elif symbol == key.T:
         label.Typein.firstt = True
         pushhandlers(label.Typein)
     elif symbol == key.M:
         pushhandlers(player.Path)
-        store.core.cplayer.moveg()
+        store.cplayer.moveg()
 @store.clevel.event
 def on_mouse_motion(x,y,dx,dy):
-    if (x+store.core.ats > store.cursor.mposx + store.core.ts or
-        x+store.core.ats < store.cursor.mposx or
-        y+store.core.ats > store.cursor.mposy + store.core.ts or
-        y+store.core.ats < store.cursor.mposy ):
+    if (x+store.ats > store.cursor.mposx + store.ts or
+        x+store.ats < store.cursor.mposx or
+        y+store.ats > store.cursor.mposy + store.ts or
+        y+store.ats < store.cursor.mposy ):
         if gui.inarea([x,y],store.clevel.levelarea):
-            store.cursor.xcoor = math.floor(x/store.core.ts)
-            store.cursor.ycoor = math.floor(y/store.core.ts)
+            store.cursor.xcoor = math.floor(x/store.ts)
+            store.cursor.ycoor = math.floor(y/store.ts)
             store.cursor.sp = Sprite(
-                         x =store.core.ct(store.cursor.xcoor),
-                         y =store.core.ct(store.cursor.ycoor),
-                         img = store.core.image['cursor'])
+                         x =store.ct(store.cursor.xcoor),
+                         y =store.ct(store.cursor.ycoor),
+                         img = store.image['cursor'])
             store.cursor.mposx = x
             store.cursor.mposy = y
             store.cursor.coor = [store.cursor.xcoor, store.cursor.ycoor]
@@ -173,7 +165,7 @@ def on_mouse_motion(x,y,dx,dy):
         else: store.cursor.onarea = 'o'
 @store.clevel.event
 def on_mouse_press(x,y,button,modifiers):
-    clickloc = store.core.findtile(store.cursor.coor)
+    clickloc = store.findtile(store.cursor.coor)
     if button == mouse.LEFT:
         if (store.rcm[0] and gui.inarea(store.cursor.coor,
             store.clevel.levelarea)):
@@ -182,7 +174,7 @@ def on_mouse_press(x,y,button,modifiers):
             store.clevel.levelarea)):
             for func in clickloc.functions:
                 if (func.func == 'door' and
-                    level.adj(store.core.cplayer,
+                    level.adj(store.cplayer,
                                   clickloc)):
                         func.use(clickloc)
         #elif store.core.store['gt']:

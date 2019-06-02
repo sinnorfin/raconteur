@@ -6,36 +6,27 @@ import pyglet.sprite
 from pyglet.window import mouse
 from pyglet.window import key
 
-from sp import Sp_Tile
-
 class Player(object):
     def __init__(self, coor, img, id=0,name = 'Player',
                  inv=None):
         self.coor = coor
         self.img = img
         self.id = id
-        self.loc = store.core.findtile(self.coor)
+        self.loc = store.findtile(self.coor)
         self.name = name
         self.inv = [] if inv is None else inv
         self.itemcount = 0
         self.look = 'pchar'
         self.mrange = 5
-        self.sp = Sp_Tile(x = store.core.ct(self.coor[0]),
-                            y = store.core.ct(self.coor[1]),
-                            img = store.core.getim(self),id = self.id,
+        self.sp = pyglet.sprite.Sprite(x = store.ct(self.coor[0]),
+                            y = store.ct(self.coor[1]),
+                            img = store.getim(self),
                             batch = store.player_bt)
-        store.core.add(self,'gp')
-        store.core.add(self.sp,'spo')
-
-    #probably defunct now, replace all connect with gameelement.sp
-    def connect(self):
-        for sp_overlay in store.core.store['spo']:
-            if (sp_overlay.id == self.id and
-               not sp_overlay.ol):
-                return sp_overlay
+        store.add(self,'gp')
+        store.add(self.sp,'spo')
     def cols(self):
         collision = False
-        for g_tile in store.core.store['gt']:
+        for g_tile in store.store['gt']:
             if (g_tile.passable == False and
                 g_tile.coor == self.coor):
                     collision = True
@@ -51,7 +42,7 @@ class Player(object):
         down = self.coor[1] - 1
         right = self.coor[0] + 1
         left = self.coor[0] - 1
-        for g_tile in store.core.store['gt']:
+        for g_tile in store.store['gt']:
             add = False
             if (g_tile.coor[1] == up and
                 g_tile.coor[0] == right):
@@ -86,7 +77,7 @@ class Player(object):
                     add = True
                     ckcoll = [self.coor[1],left]
             if (add == True and
-                level.coll([ckcoll[0],ckcoll[1]]) == False):
+                self.cols([ckcoll[0],ckcoll[1]]) == False):
                     player_bordering.append(g_tile)
         return player_bordering
     def pathing(self):
@@ -99,9 +90,9 @@ class Player(object):
                 costlist.append(path.cost)
             Path.cpath = Path.pl[costlist.index(min(costlist))]
             for node in Path.cpath.nodes:
-                tag = pyglet.sprite.Sprite(x= store.core.ct(node.coor[0]),
-                              y= store.core.ct(node.coor[1]),
-                              img = store.core.image ['marker2'],
+                tag = pyglet.sprite.Sprite(x= store.ct(node.coor[0]),
+                              y= store.ct(node.coor[1]),
+                              img = store.image ['marker2'],
                               batch = store.debug_bt)
                 Path.wp.append(tag)
     def moveg(self):
@@ -109,17 +100,17 @@ class Player(object):
         self.checkmv(self.loc,True)
         Path.tagged = list(set(Path.tagged))
         for tile in Path.tagged:
-            tag = pyglet.sprite.Sprite(x= store.core.ct(tile.coor[0]),
-                          y= store.core.ct(tile.coor[1]),
-                          img = store.core.image ['marker'],
+            tag = pyglet.sprite.Sprite(x= store.ct(tile.coor[0]),
+                          y= store.ct(tile.coor[1]),
+                          img = store.image ['marker'],
                           batch = store.debug_bt)
             Path.tags.append(tag)
         for tagged in Path.tagged:
             Path.ptagged.append(tagged)
         if level.ontiles([store.cursor.mposx,store.cursor.mposy],Path.ptagged):
             Path.clean_Path(tags=False)
-            Path.goal = store.core.findtile(store.cursor.coor)
-            store.core.cplayer.pathing()
+            Path.goal = store.findtile(store.cursor.coor)
+            store.cplayer.pathing()
     def checkmv(self,tchk,first = False,pat=False,f=None):
         checkdirs = [tchk.dirs['xam'],tchk.dirs['xap'],
                      tchk.dirs['yam'],tchk.dirs['yap']]
@@ -160,34 +151,36 @@ class Player(object):
         if not level.coll([self.coor[1]+1,self.coor[0]]):
             self.coor[1] += 1
             self.look = 'pcharB'
-            #self.connect().image=store.core.image [self.look]
-            self.sp.image=store.core.image [self.look]
-            self.connect().y = store.core.ct(self.coor[1])
-            self.loc = store.core.findtile(self.coor)
+            #self.connect().image=store.image [self.look]
+            self.sp.image=store.image [self.look]
+            self.sp.y = store.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
+            for item in self.inv:
+                pass
             controls.turn()
     def movedown(self):
         if not level.coll([self.coor[1]-1,self.coor[0]]):
             self.coor[1] -= 1
             self.look = 'pcharF'
-            self.connect().image=store.core.image [self.look]
-            self.connect().y = store.core.ct(self.coor[1])
-            self.loc = store.core.findtile(self.coor)
+            self.sp.image=store.image [self.look]
+            self.sp.y = store.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
             controls.turn()
     def moveleft(self):
         if not level.coll([self.coor[1],self.coor[0]-1]):
             self.coor[0] -= 1
             self.look = 'pcharR'
-            self.connect().image=store.core.image [self.look]
-            self.connect().x = store.core.ct(self.coor[0])
-            self.loc = store.core.findtile(self.coor)
+            self.sp.image=store.image [self.look]
+            self.sp.x = store.ct(self.coor[0])
+            self.loc = store.findtile(self.coor)
             controls.turn()
     def moveright(self):
         if not level.coll([self.coor[1],self.coor[0]+1]):
             self.coor[0] += 1
             self.look = 'pchar'
-            self.connect().image=store.core.image [self.look]
-            self.connect().x = store.core.ct(self.coor[0])
-            self.loc = store.core.findtile(self.coor)
+            self.sp.image=store.image [self.look]
+            self.sp.x = store.ct(self.coor[0])
+            self.loc = store.findtile(self.coor)
             controls.turn()
     def pmove(self,path,step):
         if Path.step < len(path):
@@ -197,9 +190,9 @@ class Player(object):
             Path.step = 0
             self.coor[0] = Path.goal.coor[0]
             self.coor[1] = Path.goal.coor[1]
-            self.loc = store.core.findtile(self.coor)
-            self.connect().x = store.core.ct(self.coor[0])
-            self.connect().y = store.core.ct(self.coor[1])
+            self.loc = store.findtile(self.coor)
+            self.sp.x = store.ct(self.coor[0])
+            self.sp.y = store.ct(self.coor[1])
             controls.turn()
     def addplayer(self):
         g_newplayer = Player(coor=[self.coor[0]+1,
@@ -239,33 +232,33 @@ class Path(object):
             return True
     @staticmethod
     def on_mouse_motion(x,y,dx,dy):
-        if (x+store.core.ats > store.cursor.mposx + store.core.ts or
-            x+store.core.ats < store.cursor.mposx or
-            y+store.core.ats > store.cursor.mposy + store.core.ts or
-            y+store.core.ats < store.cursor.mposy ):
+        if (x+store.ats > store.cursor.mposx + store.ts or
+            x+store.ats < store.cursor.mposx or
+            y+store.ats > store.cursor.mposy + store.ts or
+            y+store.ats < store.cursor.mposy ):
             if level.ontiles([x,y],Path.ptagged):
-                store.cursor.xcoor = math.floor(x/store.core.ts)
-                store.cursor.ycoor = math.floor(y/store.core.ts)
+                store.cursor.xcoor = math.floor(x/store.ts)
+                store.cursor.ycoor = math.floor(y/store.ts)
                 store.cursor.cursor = pyglet.sprite.Sprite(
-                             x =store.core.ct(store.cursor.xcoor),
-                             y =store.core.ct(store.cursor.ycoor),
-                             img = store.core.image['cursor'])
+                             x =store.ct(store.cursor.xcoor),
+                             y =store.ct(store.cursor.ycoor),
+                             img = store.image['cursor'])
                 store.cursor.mposx = x
                 store.cursor.mposy = y
                 store.cursor.coor = [store.cursor.xcoor, store.cursor.ycoor]
                 store.cursor.onarea = 'm'
                 Path.clean_Path(tags=False)
-                Path.goal = store.core.findtile(store.cursor.coor)
-                store.core.cplayer.pathing()
+                Path.goal = store.findtile(store.cursor.coor)
+                store.cplayer.pathing()
         return True
     @staticmethod
     def on_mouse_press(x,y,button,modifiers):
         if button == mouse.LEFT:
             if level.ontiles([x,y],Path.ptagged):
                 Path.clean_Path()
-                Path.goal = store.core.findtile(store.cursor.coor)
-                store.core.cplayer.pathing()
-                store.core.cplayer.pmove(Path.cpath.nodes,
+                Path.goal = store.findtile(store.cursor.coor)
+                store.cplayer.pathing()
+                store.cplayer.pmove(Path.cpath.nodes,
                                             Path.step)
                 del Path.ptagged[:]
                 Path.clean_Path()

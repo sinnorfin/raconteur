@@ -3,7 +3,6 @@ import _pickle as cPickle
 import random
 import pyglet.window
 import store
-import sp
 import element
 
 class Level(pyglet.window.Window):
@@ -11,10 +10,10 @@ class Level(pyglet.window.Window):
         self.x = x
         self.y = y
         self.tset = tset
-        super(Level, self).__init__(self.x * store.core.ts
-                                  + store.core.ts * 3,
-                                    self.y * store.core.ts
-                                  + store.core.ts,
+        super(Level, self).__init__(self.x * store.ts
+                                  + store.ts * 3,
+                                    self.y * store.ts
+                                  + store.ts,
                                     resizable= False)
         self.xsize = self.width
         self.xcenter = self.xsize / 2
@@ -23,7 +22,7 @@ class Level(pyglet.window.Window):
 
     # def on_resize(self,width,height):
     #     store.ts
-    #     store.core.ats
+    #     store.ats
     #     self.xsize
     #     self.ysize
     #     if width - 50 > self.xsize or width + 50 < self.xsize:
@@ -33,7 +32,7 @@ class Level(pyglet.window.Window):
     #         scaletoint = float(scaletoint)/10000
     #         glscalef(scaletoint, scaletoint, scaletoint)
     #         store.ts = store.ts * scaletoint
-    #         store.core.ats = store.ts/2
+    #         store.ats = store.ts/2
     #         cursor.cursor.x = cursor.cursor.x * scaletoint
     #         cursor.cursor.y = cursor.cursor.y * scaletoint
     #         #cursor.mposx = cursor.mposx * scaletoint
@@ -44,28 +43,27 @@ class Level(pyglet.window.Window):
     #     height = self.ysize
 
     def levelgen(self):
-        if store.core.store['spt']: dellevel()
+        if store.store['spt']: dellevel()
         self.levelarea = Gamearea(1,'level',
-                             [[0,store.core.ts*self.x],
-                             [0,store.core.ts*self.y]])
+                             [[0,store.ts*self.x],
+                             [0,store.ts*self.y]])
         gcoor = [0,0]
         genid = 1
         for i in range(self.x):
-            store.core.add(ctile(gcoor,genid),'gt')
+            store.add(ctile(gcoor,genid),'gt')
             genid +=1
             for i in range(self.y-1):
                 gcoor= [gcoor[0],gcoor[1] + 1]
-                store.core.add(ctile(gcoor,genid),'gt')
+                store.add(ctile(gcoor,genid),'gt')
                 genid += 1
             gcoor= [gcoor[0],0]
             gcoor= [gcoor[0]+1,gcoor[1]]
-        for tile in store.core.store['gt']:
-            tile.interlace(store.core.store['gt'])
-            sp_tile = store.buildmenu.build(tile,'space',
+        for tile in store.store['gt']:
+            tile.interlace(store.store['gt'])
+            store.buildmenu.build(tile,'space',
                                            tile.coor,tile.id)
             if len(tile.adjl) != 8:
-                sp_tile = store.buildmenu.build(tile,'wall',
-                                               tile.coor)
+                store.buildmenu.build(tile,'wall',tile.coor)
 class Gamearea(object):
     def __init__(self,id=None,name=None,coor=None):
         self.id = id
@@ -93,7 +91,7 @@ def adjlist(tocheck):
             adjlist.append(g_tile)
     return adjlist
 def arrange(toarrange,fit=True):
-    toarrange.connect().rotation = 0
+    toarrange.sp.rotation = 0
     toarrange.rot = 0
     xac = 0
     yac = 0
@@ -110,103 +108,103 @@ def arrange(toarrange,fit=True):
         toarrange.dirs['yap'].passable == False):
         yac= yac+1
     if xac == 0 and yac == 0:
-        toarrange.connect().image = store.core.image['pil']
+        toarrange.sp.image = store.image['pil']
         toarrange.img = 'pil'
         toarrange.tt = 's'
     elif xac == 1 and yac == 0:
         if (toarrange.dirs['xap'] and
             toarrange.dirs['xap'].passable == False):
-            toarrange.connect().image=store.core.image['cap']
-            toarrange.connect().rotation=270
+            toarrange.sp.image=store.image['cap']
+            toarrange.sp.rotation=270
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 270
         elif (toarrange.dirs['xam'] and
             toarrange.dirs['xam'].passable == False):
-            toarrange.connect().image=store.core.image['cap']
-            toarrange.connect().rotation=90
+            toarrange.sp.image=store.image['cap']
+            toarrange.sp.rotation=90
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 90
     elif xac == 2 and yac == 0 :
-        toarrange.connect().rotation=90
+        toarrange.sp.rotation=90
         toarrange.tt = 'x'
-        toarrange.connect().image=store.core.image['wall']
+        toarrange.sp.image=store.image['wall']
         toarrange.img = 'wall'
         toarrange.rot = 90
     elif xac != 0 and yac != 0:
         if xac+yac == 2:
-            toarrange.connect().image=store.core.image['corner']
+            toarrange.sp.image=store.image['corner']
             toarrange.img = 'corner'
             if ((toarrange.dirs['xap'] and
                 toarrange.dirs['yam']) and
                 (toarrange.dirs['xap'].passable == False and
                 toarrange.dirs['yam'].passable == False)):
-                toarrange.connect().rotation=0
+                toarrange.sp.rotation=0
                 toarrange.tt = 'cse'
                 toarrange.rot = 0
             elif ((toarrange.dirs['xam'] and
                 toarrange.dirs['yam']) and
                 (toarrange.dirs['xam'].passable == False and
                 toarrange.dirs['yam'].passable == False)):
-                toarrange.connect().rotation=90
+                toarrange.sp.rotation=90
                 toarrange.tt = 'csw'
                 toarrange.rot = 90
             elif ((toarrange.dirs['xam'] and
                 toarrange.dirs['yap']) and
                 (toarrange.dirs['xam'].passable == False and
                 toarrange.dirs['yap'].passable == False)):
-                toarrange.connect().rotation=180
+                toarrange.sp.rotation=180
                 toarrange.tt = 'cnw'
                 toarrange.rot = 180
             else:
-                toarrange.connect().rotation=270
+                toarrange.sp.rotation=270
                 toarrange.tt = 'cne'
                 toarrange.rot = 270
         elif xac+yac == 3:
-            toarrange.connect().image=store.core.image['tsect']
+            toarrange.sp.image=store.image['tsect']
             toarrange.img = 'tsect'
             if (not toarrange.dirs['xam'] or
                 toarrange.dirs['xam'].passable == True):
-                toarrange.connect().rotation=0
+                toarrange.sp.rotation=0
                 toarrange.tt = 'tw'
                 toarrange.rot = 0
             elif (not toarrange.dirs['yap'] or
                 toarrange.dirs['yap'].passable == True):
-                toarrange.connect().rotation=90
+                toarrange.sp.rotation=90
                 toarrange.tt = 'tn'
                 toarrange.rot = 90
             elif (not toarrange.dirs['xap'] or
                 toarrange.dirs['xap'].passable == True):
-                toarrange.connect().rotation=180
+                toarrange.sp.rotation=180
                 toarrange.tt = 'te'
                 toarrange.rot = 180
             else:
-                toarrange.connect().rotation=270
+                toarrange.sp.rotation=270
                 toarrange.tt = 'ts'
                 toarrange.rot = 270
         else:
-            toarrange.connect().image=store.core.image['fourway']
+            toarrange.sp.image=store.image['fourway']
             toarrange.img = 'fourway'
             toarrange.tt = 'fw'
     else:
         if (yac == 1 and toarrange.dirs['yam'] and
             toarrange.dirs['yam'].passable == False):
-            toarrange.connect().image=store.core.image['cap']
-            toarrange.connect().rotation=0
+            toarrange.sp.image=store.image['cap']
+            toarrange.sp.rotation=0
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 0
         elif (yac == 1 and toarrange.dirs['yap'] and
             toarrange.dirs['yap'].passable == False):
-            toarrange.connect().image=store.core.image['cap']
-            toarrange.connect().rotation=180
+            toarrange.sp.image=store.image['cap']
+            toarrange.sp.rotation=180
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 180
         else:
             toarrange.tt = 'y'
-            toarrange.connect().image=store.core.image['wall']
+            toarrange.sp.image=store.image['wall']
             toarrange.img = 'wall'
     if fit == True:
         fitnext(toarrange.wadjl)
@@ -216,7 +214,7 @@ class SelBuild(object):
         self.blist = [['wall',0],['door0',0],['door1',0],['key',1]]
         self.label = pyglet.text.Label(self.blist[0][0],
                 'Courier_new',30, x= store.clevel.xcenter,
-                y = store.clevel.y * store.core.ts + 25,
+                y = store.clevel.y * store.ts + 25,
                 anchor_x = 'center', anchor_y = 'center')
     def next(self):
         self.label.delete()
@@ -230,28 +228,28 @@ class SelBuild(object):
                                         'Courier_new',30,
                                         x= store.clevel.xcenter,
                                         y = store.clevel.y *
-                                        store.core.ts+25,
+                                        store.ts+25,
                                         anchor_x = 'center',
                                         anchor_y = 'center')
     def build(self,buildloc,type,gcoor,inid=0):
         #sp_built = None
-        scoor = [store.core.ct(gcoor[0]),
-                 store.core.ct(gcoor[1])]
+        scoor = [store.ct(gcoor[0]),
+                 store.ct(gcoor[1])]
         if type != 'space' and buildloc.occup == True:
             type = 'none'
         if type == 'space':
-            sp_built = sp.Sp_Tile(x= scoor[0],
+            buildloc.sp=pyglet.sprite.Sprite(x= scoor[0],
                       y= scoor[1],
-                      img = store.core.image['space'],
-                      batch = store.map_bt ,id= inid)
-            store.core.add(sp_built,'spt')
+                      img = store.image['space'],
+                      batch = store.map_bt)
+            store.add(buildloc.sp,'spt')
         if type == 'wall':
             var_wall = ['wall','wall_v1']
             buildloc.occup = True
             buildloc.passable = False
             buildloc.img = var_wall[random.randint(0,
                                     len(var_wall)-1)]
-            buildloc.connect().image =store.core.image[buildloc.img]
+            buildloc.sp.image =store.image[buildloc.img]
             buildloc.wadjl = adjlist(buildloc)
             arrange(buildloc)
         if type == 'door0':
@@ -260,7 +258,7 @@ class SelBuild(object):
             door = element.Door(loc=buildloc,closed=True)
             buildloc.functions.append(door)
             buildloc.img = 'door0'
-            buildloc.connect().image=store.core.image['door0']
+            buildloc.sp.image=store.image['door0']
             buildloc.wadjl = adjlist(buildloc)
             arrange(buildloc)
         if type == 'door1':
@@ -269,12 +267,12 @@ class SelBuild(object):
             door = element.Door(loc=buildloc)
             buildloc.functions.append(door)
             buildloc.img = 'door1'
-            buildloc.connect().image=store.core.image['door1']
+            buildloc.sp.image=store.image['door1']
             buildloc.wadjl = adjlist(buildloc)
             arrange(buildloc)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
-        overloc = store.core.findtile(coor)
+        overloc = store.findtile(coor)
         lay = True
         for ol in overloc.overlays:
             if ol.name == type:
@@ -289,12 +287,11 @@ class SelBuild(object):
                            img='key',name='key',
                            loc=overloc,func='item_p')
                 overloc.overlays.append(key)
-                sp_overlay = sp.Sp_Tile(x=store.core.ct(key.x),
-                                        y=store.core.ct(key.y),
-                                        img=store.core.getim(key),
-                                        batch=store.item_bt,id=key.id,
-                                        ol=True)
-                store.core.store['spo'].append(sp_overlay)
+                key.sp = pyglet.sprite.Sprite(x=store.ct(key.x),
+                                        y=store.ct(key.y),
+                                        img=store.getim(key),
+                                        batch=store.item_bt)
+                store.store['spo'].append(key.sp)
                 element.Item.objid += 1
 class Spawn(object):
     reiterlist = []
@@ -303,7 +300,7 @@ class Spawn(object):
         reiter = 0
         if type == 'wall':
             genloclist = []
-            for genloc in store.core.store['gt']:
+            for genloc in store.store['gt']:
                 if genloc.occup == False:
                     genloclist.append(genloc)
             limit = len(genloclist)
@@ -318,7 +315,7 @@ class Spawn(object):
 #Spawn.g_object(3,type = 'wall')
 def coll(direc):
     collision = False
-    for g_tile in store.core.store['gt']:
+    for g_tile in store.store['gt']:
         if (g_tile.passable == False and
             g_tile.coor[1] == direc[0] and g_tile.coor[0] == direc[1]):
                 collision = True
@@ -336,10 +333,10 @@ def ctile(gcoor,genid):
     return g_gen
 def ontiles(m_coor,tiles):
     for tile in tiles:
-        if (m_coor[0] >= store.core.ct(tile.coor[0])-store.core.ats and
-            m_coor[0] <= store.core.ct(tile.coor[0])+store.core.ats and
-            m_coor[1] >= store.core.ct(tile.coor[1])-store.core.ats and
-            m_coor[1] <= store.core.ct(tile.coor[1])+store.core.ats):
+        if (m_coor[0] >= store.ct(tile.coor[0])-store.ats and
+            m_coor[0] <= store.ct(tile.coor[0])+store.ats and
+            m_coor[1] >= store.ct(tile.coor[1])-store.ats and
+            m_coor[1] <= store.ct(tile.coor[1])+store.ats):
             return True
 def standon(tocheck, against):
     if (against.coor[0] == tocheck.x and
@@ -349,47 +346,45 @@ def standon(tocheck, against):
     return standon
 def savelevel():
     savelev = open('saved_level','wb')
-    saved_tiles = store.core.store['gt']
+    saved_tiles = store.store['gt']
     cPickle.dump(saved_tiles,savelev)
-    for player in store.core.store['gp']:
+    for player in store.store['gp']:
         cPickle.dump(player,savelev)
     savelev.close()
 def loadlevel():
     dellevel()
-    for sp_overlay in store.core.store['spo']:
+    for sp_overlay in store.store['spo']:
         sp_overlay.delete()
-    del store.core.store['spo'][:]
-    del store.core.store['gp'][:]
+    del store.store['spo'][:]
+    del store.store['gp'][:]
     loadlev = open('saved_level','rb')
-    store.core.store['gt'] = cPickle.load(loadlev)
-    store.core.store['gp'] = cPickle.load(loadlev)
-    for g_tile in store.core.store['gt']:
-        sp_tile = Sp_Tile(x=store.core.ct(g_tile.coor[0]), y=store.core.ct(g_tile.coor[1]),
-                          img=getim(g_tile),
-                          bt= store.map_batch,id=g_tile.id)
+    store.store['gt'] = cPickle.load(loadlev)
+    store.store['gp'] = cPickle.load(loadlev)
+    for g_tile in store.store['gt']:
+        sp_tile = pyglet.sprite.Sprite(x=store.ct(g_tile.coor[0]),
+                          y=store.ct(g_tile.coor[1]), img=getim(g_tile),
+                          bt= store.map_batch)
         sp_tile.rotation=g_tile.rot
-        store.core.store['spt'].append(sp_tile)
+        store.store['spt'].append(sp_tile)
         if g_tile.overlays:
             for ol in g_tile.overlays:
-                sp_overlay = Sp_Tile(x=store.core.ct(ol.x),y=store.core.ct(ol.y),
+                sp_overlay = pyglet.sprite.Sprite(x=store.ct(ol.x),y=store.ct(ol.y),
                                      img=getim(ol),
-                                     bt=store.item_batch,id=ol.id,
-                                     ol=True)
-                store.core.store['spo'].append(sp_overlay)
-    for g_player in store.core.store['gp']:
-        sp_overlay = Sp_Tile(x=store.core.ct(g_player.coor[0]),
-                             y=store.core.ct(g_player.coor[1]),
+                                     bt=store.item_batch)
+                store.store['spo'].append(sp_overlay)
+    for g_player in store.store['gp']:
+        sp_overlay = pyglet.sprite.Sprite(x=store.ct(g_player.coor[0]),
+                             y=store.ct(g_player.coor[1]),
                              img = getim(g_player),
-                             id= g_player.id,
                              bt = store.player_batch)
-        store.core.store['spo'].append(sp_overlay)
+        store.store['spo'].append(sp_overlay)
     loadlev.close()
 def dellevel(delol=False):
     if delol == True:
-        store.core.store['spo'][:] = [ol for ol in
-                               store.core.store['spo'] if not
+        store.store['spo'][:] = [ol for ol in
+                               store.store['spo'] if not
                                store.det_ol(ol)]
-    for sp_tile in store.core.store['spt']:
+    for sp_tile in store.store['spt']:
         sp_tile.delete()
-    del store.core.store['spt'][:]
-    del store.core.store['gt'][:]
+    del store.store['spt'][:]
+    del store.store['gt'][:]

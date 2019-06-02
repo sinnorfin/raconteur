@@ -1,11 +1,15 @@
 import store
-class Tile(object):
-    def __init__(self, img, id=0, coor=[], passable= True,
-                 occup= False, tt= 's',overlays=None,
-                 functions=None,adjl=None,wadjl=None,rot=0):
+class Gameobject(object):
+    def __init__(self,img='',id=0,sp=None):
         self.img = img
-        self.coor = coor
         self.id = id
+        self.sp = sp
+class Tile(Gameobject):
+    def __init__(self, img, id=0, coor=[], passable= True,
+                 occup= False, tt= 's',sp = None, overlays=None,
+                 functions=None,adjl=None,wadjl=None,rot=0):
+        super(Tile, self).__init__(img,id,sp)
+        self.coor = coor
         self.passable = passable
         self.occup = occup
         self.tt = tt
@@ -22,10 +26,10 @@ class Tile(object):
         #delete - removes sprite from list
         clist = None
         if ol == True:
-            clist = store.core.store['spo']
-        else: clist = store.core.store['spt']
+            clist = store.store['spo']
+        else: clist = store.store['spt']
         for sp_tile in clist:
-            if sp_tile.id == self.id:
+            if sp_tile == self:
                 if (ol == True and sp_tile.ol == True):
                     if delete == True:
                         clist.remove(sp_tile)

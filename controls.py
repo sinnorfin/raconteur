@@ -5,9 +5,9 @@ import math
 import level
 
 def turn():
-    store.core.inturn += 1
-    playnum = len(store.core.store['gp'])
-    if store.core.inturn == playnum:
-        store.core.inturn = 0
-    store.core.cplayer = store.core.store['gp'][store.core.inturn]
-    store.playername_label.text = store.core.cplayer.name
+    store.inturn += 1
+    playnum = len(store.store['gp'])
+    if store.inturn == playnum:
+        store.inturn = 0
+    store.cplayer = store.store['gp'][store.inturn]
+    store.playername_label.text = store.cplayer.name

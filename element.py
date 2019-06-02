@@ -2,11 +2,10 @@ from tile import Tile
 import store
 import random
 class Item(Tile):
-    def __init__(self,id,x,y,img,name='',loc='',func=None):
-        self.id = id
+    def __init__(self,id,x,y,img,name='',loc='',func=None,sp=None):
+        super(Tile, self).__init__(img,id,sp)
         self.x = x
         self.y = y
-        self.img = img
         self.name = name
         self.loc = loc
         self.func = func
@@ -23,20 +22,21 @@ class Door(object):
         if self.closed == False:
             loc.img = 'door0'
             loc.passable = False
-            loc.connect().image=store.core.image['door0']
+            loc.sp.image=store.image['door0']
             self.closed = True
         else:
             if self.locked == False:
                 loc.img = 'door1'
                 loc.passable = True
-                loc.connect().image=store.core.image['door1']
+                loc.sp.image=store.image['door1']
                 self.closed = False
 def lock():
     getfunc('door').locked = True
 def unlock():
     getfunc('door').locked = False
 def pickup():
-    store.delol(store.rcm[1].clickloc,store.getol('item_p'))
+    store.cplayer.inv.append(store.getol('item_p'))
+    #store.delol(store.rcm[1].clickloc,store.getol('item_p'))
 def getfunc(funct):
     for func in store.rcm[1].clickloc.functions:
         if func.func == funct:

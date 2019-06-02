@@ -3,7 +3,6 @@ import pyglet.text
 import store
 import level
 import element
-from sp import Sp_Tile
 
 def inarea(m_coor,area):
     if (m_coor[0] >= area.coor[0][0] and
@@ -20,9 +19,9 @@ class Button(object):
     def drawbut(self,o_coor):
         self.o_coor = o_coor
         button = pyglet.sprite.Sprite(x=o_coor[0],y=o_coor[1],
-                                      img=store.core.image[self.img],
+                                      img=store.image[self.img],
                                       batch = store.menu_bt)
-        store.core.store['spg'].append(button)
+        store.store['spg'].append(button)
     def press(self):
         self.function()
         print ('you pressed %s' % self.img)
@@ -44,10 +43,10 @@ class Gui(object):
             if (max(store.prange(self.clickloc)) == 1 and
                 store.prange(self.clickloc)[0] != store.prange(self.clickloc)[1]):
                 if f.func == 'door' and f.locked == True:
-                    unl_but = Button('c_unl',unlock)
+                    unl_but = Button('c_unl',element.unlock)
                     self.buttons.append(unl_but)
                 elif f.func == 'door' and f.locked == False:
-                    lock_but = Button('c_lock',lock)
+                    lock_but = Button('c_lock',element.lock)
                     self.buttons.append(lock_but)
         for f in self.clickloc.overlays: #generator
             if max(store.prange(self.clickloc)) == 0:
@@ -82,9 +81,9 @@ class Gui(object):
     def click(self,m_coor):
         for b in self.buttons:
             button = level.Gamearea(coor=[[b.o_coor[0],
-                              b.o_coor[0]+store.core.image[b.img].width],
+                              b.o_coor[0]+store.image[b.img].width],
                               [b.o_coor[1],
-                              b.o_coor[1]+store.core.image[b.img].height]])
+                              b.o_coor[1]+store.image[b.img].height]])
             if inarea(m_coor,button):
                 b.press()
         Gui.killrcm()
@@ -92,15 +91,15 @@ class Gui(object):
     def killrcm():
         store.rcm.pop()
         store.rcm[0] = False
-        store.core.store['spg'] = []
+        store.store['spg'] = []
 class Cursor(object):
     def __init__(self):
-        self.mposx = store.core.ats
-        self.mposy = store.core.ats
+        self.mposx = store.ats
+        self.mposy = store.ats
         self.coor = [self.mposx,self.mposy]
         self.sp = pyglet.sprite.Sprite(x=self.mposx,
                                        y=self.mposy,
-                                     img=store.core.image['cursor'])
+                                     img=store.image['cursor'])
         self.onarea = 'd'
 class MousePointer(object):
     def __init__(self):
