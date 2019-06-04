@@ -40,32 +40,36 @@ def game():
 class Anim(object):
     @staticmethod
     def movetoward(goal,animated):
-        if (animated.x == goal.x and
-            animated.y == goal.y):
+        if (animated.sp.x == goal.x and
+            animated.sp.y == goal.y):
             player.Path.anim = False
             player.Path.step += 1
             store.cplayer.pmove(player.Path.cpath.nodes,
                                     player.Path.step)
-        if animated.x < goal.x:
-            store.cplayer.look = 'pchar'
-            animated.image=store.image[store.cplayer.look]
-            animated.x += 10
-        if animated.y < goal.y:
-            store.cplayer.look = 'pcharB'
-            animated.image=store.image[store.cplayer.look]
-            animated.y += 10
-        if animated.x > goal.x:
-            store.cplayer.look = 'pcharR'
-            animated.image=store.image[store.cplayer.look]
-            animated.x -= 10
-        if animated.y > goal.y:
-            store.cplayer.look = 'pcharF'
-            animated.image=store.image[store.cplayer.look]
-            animated.y -= 10
+            animated.updateols()
+            animated.updateitems()
+        else:
+            if animated.sp.x < goal.x:
+                store.cplayer.look = 'pchar'
+                animated.sp.image=store.image[store.cplayer.look]
+                animated.sp.x += 10
+            if animated.sp.y < goal.y:
+                store.cplayer.look = 'pcharB'
+                animated.sp.image=store.image[store.cplayer.look]
+                animated.sp.y += 10
+            if animated.sp.x > goal.x:
+                store.cplayer.look = 'pcharR'
+                animated.sp.image=store.image[store.cplayer.look]
+                animated.sp.x -= 10
+            if animated.sp.y > goal.y:
+                store.cplayer.look = 'pcharF'
+                animated.sp.image=store.image[store.cplayer.look]
+                animated.sp.y -= 10
+            animated.updateols()
 def update(dt):
     if player.Path.anim == True:
         Anim.movetoward(player.Path.node.sp,
-                        store.cplayer.sp)
+                        store.cplayer)
 game()
 
 def pushhandlers(Class):
@@ -89,12 +93,20 @@ def on_draw():
 def on_key_press(symbol,modifiers):
     if symbol == key.UP:
         store.cplayer.moveup()
+        store.cplayer.updateols()
+        store.cplayer.updateitems()
     elif symbol == key.DOWN:
         store.cplayer.movedown()
+        store.cplayer.updateols()
+        store.cplayer.updateitems()
     elif symbol == key.LEFT:
         store.cplayer.moveleft()
+        store.cplayer.updateols()
+        store.cplayer.updateitems()
     elif symbol == key.RIGHT:
         store.cplayer.moveright()
+        store.cplayer.updateols()
+        store.cplayer.updateitems()
     elif symbol == key.SPACE:
         if not store.cplayer.cols():
             if store.cplayer.img == 'pchar':

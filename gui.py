@@ -53,6 +53,9 @@ class Gui(object):
                 if hasattr(f,'func') and f.func == 'item_p':
                     pickup_but = Button('c_pickup',element.pickup)
                     self.buttons.append(pickup_but)
+        if store.cplayer.inv:
+            drop_but = Button('c_drop',element.drop)
+            self.buttons.append(drop_but)
         self.fitmenu(len(self.buttons)+1)
         self.refresh_menu()
     def fitmenu(self,c):

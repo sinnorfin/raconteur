@@ -24,6 +24,15 @@ class Player(object):
                             batch = store.player_bt)
         store.add(self,'gp')
         store.add(self.sp,'spo')
+    def updateols(self):
+        for item in self.inv:
+            item.sp.x = self.sp.x
+            item.sp.y = self.sp.y
+    def updateitems(self):
+        for item in self.inv:
+            item.x = self.coor[0]
+            item.y = self.coor[1]
+            item.loc = self.loc
     def cols(self):
         collision = False
         for g_tile in store.store['gt']:

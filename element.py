@@ -35,8 +35,15 @@ def lock():
 def unlock():
     getfunc('door').locked = False
 def pickup():
-    store.cplayer.inv.append(store.getol('item_p'))
+    item = store.getol('item_p')
+    store.cplayer.loc.overlays[:] = [x for x in store.cplayer.loc.overlays
+    if x.name != item.name]
+    store.cplayer.inv.append(item)
     #store.delol(store.rcm[1].clickloc,store.getol('item_p'))
+def drop():
+    store.cplayer.loc.overlays.append(
+                store.cplayer.inv[-1])
+    store.cplayer.inv.pop()
 def getfunc(funct):
     for func in store.rcm[1].clickloc.functions:
         if func.func == funct:
