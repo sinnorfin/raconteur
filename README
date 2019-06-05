@@ -4,3 +4,16 @@ It aims to be a character driven turn based RPG, combining on-the-spot gameplay
 with generated story arcs.
 modulated.
 
+Controls:
+
+Arrow keys  - Movement
+B           - Build
+Q           - Toggle Build option
+M           - Movement by mouse (pathing)
+P           - Add new player
+T           - Type in name for player
+Space       - Put on cloak
+R           - Generate random map
+Del         - Deletes Map
+
+Right Click - Menu
