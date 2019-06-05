@@ -16,6 +16,7 @@ class Player(object):
         self.name = name
         self.inv = [] if inv is None else inv
         self.itemcount = 0
+        self.dirs = ['pcharF','pchar','pcharB','pcharR']
         self.look = 'pchar'
         self.mrange = 5
         self.sp = pyglet.sprite.Sprite(x = store.ct(self.coor[0]),
@@ -24,6 +25,17 @@ class Player(object):
                             batch = store.player_bt)
         store.add(self,'gp')
         store.add(self.sp,'spo')
+    def build(self,buildmenu):
+        if not self.cols():
+            if buildmenu.c[1] == 1:
+               buildmenu.overlay(store.findtile(self.coor),
+                                buildmenu.blist[buildmenu.c[0]][0],
+                                self.coor)
+            else:
+                buildmenu.build(store.findtile(self.coor),
+                                buildmenu.blist[buildmenu.c[0]][0],
+                                self.coor)
+            controls.turn()
     def updateols(self):
         for item in self.inv:
             item.sp.x = self.sp.x
@@ -156,41 +168,18 @@ class Player(object):
                                      f=tchk)
                     else:
                         self.checkmv(ccheck,f=tchk)
-    def moveup(self):
-        if not level.coll([self.coor[1]+1,self.coor[0]]):
-            self.coor[1] += 1
-            self.look = 'pcharB'
-            #self.connect().image=store.image [self.look]
+    def moveone(self,coor,dir,fixcoor):
+        if not level.coll([self.coor[coor]+dir,self.coor[fixcoor]]):
+            self.coor[coor] += dir
+            self.look = self.dirs[coor+dir]
             self.sp.image=store.image [self.look]
-            self.sp.y = store.ct(self.coor[1])
-            self.loc = store.findtile(self.coor)
-            for item in self.inv:
-                pass
-            controls.turn()
-    def movedown(self):
-        if not level.coll([self.coor[1]-1,self.coor[0]]):
-            self.coor[1] -= 1
-            self.look = 'pcharF'
-            self.sp.image=store.image [self.look]
-            self.sp.y = store.ct(self.coor[1])
+            if coor == 0:
+                self.sp.x = store.ct(self.coor[0])
+            else: self.sp.y = store.ct(self.coor[1])
             self.loc = store.findtile(self.coor)
             controls.turn()
-    def moveleft(self):
-        if not level.coll([self.coor[1],self.coor[0]-1]):
-            self.coor[0] -= 1
-            self.look = 'pcharR'
-            self.sp.image=store.image [self.look]
-            self.sp.x = store.ct(self.coor[0])
-            self.loc = store.findtile(self.coor)
-            controls.turn()
-    def moveright(self):
-        if not level.coll([self.coor[1],self.coor[0]+1]):
-            self.coor[0] += 1
-            self.look = 'pchar'
-            self.sp.image=store.image [self.look]
-            self.sp.x = store.ct(self.coor[0])
-            self.loc = store.findtile(self.coor)
-            controls.turn()
+            self.updateols()
+            self.updateitems()
     def pmove(self,path,step):
         if Path.step < len(path):
             Path.node = path[step]
@@ -207,6 +196,15 @@ class Player(object):
         g_newplayer = Player(coor=[self.coor[0]+1,
                              self.coor[1]+1],img='pchar',id=store.cid)
         store.cid +=1
+    def cloak(self):
+        if not self.cols():
+            if self.img == 'pchar':
+                self.sp.image= store.image['pchar_1b']
+                self.img = 'pchar_1b'
+            else:
+                self.sp.image= store.image['pchar']
+                self.img = 'pchar'
+            controls.turn()
 class Path(object):
     cost = 0
     tagged = []

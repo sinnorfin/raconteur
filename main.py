@@ -92,47 +92,17 @@ def on_draw():
 @store.clevel.event
 def on_key_press(symbol,modifiers):
     if symbol == key.UP:
-        store.cplayer.moveup()
-        store.cplayer.updateols()
-        store.cplayer.updateitems()
+        store.cplayer.moveone(1,1,0)
     elif symbol == key.DOWN:
-        store.cplayer.movedown()
-        store.cplayer.updateols()
-        store.cplayer.updateitems()
+        store.cplayer.moveone(1,-1,0)
     elif symbol == key.LEFT:
-        store.cplayer.moveleft()
-        store.cplayer.updateols()
-        store.cplayer.updateitems()
+        store.cplayer.moveone(0,-1,1)
     elif symbol == key.RIGHT:
-        store.cplayer.moveright()
-        store.cplayer.updateols()
-        store.cplayer.updateitems()
+        store.cplayer.moveone(0,1,1)
     elif symbol == key.SPACE:
-        if not store.cplayer.cols():
-            if store.cplayer.img == 'pchar':
-                store.cplayer.sp.image= store.image['pchar_1b']
-                store.cplayer.img = 'pchar_1b'
-            else:
-                store.cplayer.sp.image= store.image['pchar']
-                store.cplayer.img = 'pchar'
-            controls.turn()
+        store.cplayer.cloak()
     elif symbol == key.B:
-        if not store.cplayer.cols():
-            if store.buildmenu.c[1] == 1:
-                store.buildmenu.overlay(store.findtile(
-                                    store.cplayer.coor),
-                                    store.buildmenu.blist[
-                                    store.buildmenu.c[0]][0],
-                        store.cplayer.coor)
-                controls.turn()
-            else:
-                store.buildmenu.build(
-                                    store.findtile(
-                                    store.cplayer.coor),
-                                    store.buildmenu.blist[
-                                    store.buildmenu.c[0]][0],
-                                    store.cplayer.coor)
-                controls.turn()
+        store.cplayer.build(store.buildmenu)
     elif symbol == key.P:
         store.cplayer.addplayer()
     elif symbol == key.DELETE:
@@ -189,13 +159,6 @@ def on_mouse_press(x,y,button,modifiers):
                     level.adj(store.cplayer,
                                   clickloc)):
                         func.use(clickloc)
-        #elif store.core.store['gt']:
-            #for g_tile in store.core.store['gt']:
-                #if store.cursor.coor == g_tile.coor:
-                    #if not level.standon(
-                        #store.core.cplayer, g_tile):
-                            #pathto(
-                                #store.core.cplayer,g_tile)
     elif button == mouse.RIGHT:
         if gui.inarea([x,y],store.clevel.levelarea):
             # menu appears only when right clicked
