@@ -31,9 +31,11 @@ class Door(object):
                 loc.sp.image=store.image['door1']
                 self.closed = False
 def lock():
-    getfunc('door').locked = True
+    if store.cplayer.hasitem_name('key'):
+        getfunc('door').locked = True
 def unlock():
-    getfunc('door').locked = False
+    if store.cplayer.hasitem_name('key'):
+        getfunc('door').locked = False
 def pickup():
     item = store.getol('item_p')
     store.cplayer.loc.overlays[:] = [x for x in store.cplayer.loc.overlays

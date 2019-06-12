@@ -1,4 +1,5 @@
 import store
+import tile
 import math
 import controls
 import level
@@ -6,17 +7,16 @@ import pyglet.sprite
 from pyglet.window import mouse
 from pyglet.window import key
 
-class Player(object):
+class Player(tile.Gameobject):
     def __init__(self, coor, img, id=0,name = 'Player',
                  inv=None):
+        super(Player, self).__init__(img,id)
         self.coor = coor
-        self.img = img
-        self.id = id
         self.loc = store.findtile(self.coor)
         self.name = name
         self.inv = [] if inv is None else inv
         self.itemcount = 0
-        self.dirs = ['pcharF','pchar','pcharB','pcharR']
+        self.faces = ['pcharF','pchar','pcharB','pcharR']
         self.look = 'pchar'
         self.mrange = 5
         self.sp = pyglet.sprite.Sprite(x = store.ct(self.coor[0]),
@@ -133,8 +133,8 @@ class Player(object):
             Path.goal = store.findtile(store.cursor.coor)
             store.cplayer.pathing()
     def checkmv(self,tchk,first = False,pat=False,f=None):
-        checkdirs = [tchk.dirs['xam'],tchk.dirs['xap'],
-                     tchk.dirs['yam'],tchk.dirs['yap']]
+        checkdirs = [tchk.dirs[-1],tchk.dirs[1],
+                     tchk.dirs[0],tchk.dirs[2]]
         if f: checkdirs.pop(checkdirs.index(f))
         if first == True:
             st_cost = Path.cost
@@ -169,9 +169,9 @@ class Player(object):
                     else:
                         self.checkmv(ccheck,f=tchk)
     def moveone(self,coor,dir,fixcoor):
-        if not level.coll([self.coor[coor]+dir,self.coor[fixcoor]]):
+        if not self.coll(coor+dir):
             self.coor[coor] += dir
-            self.look = self.dirs[coor+dir]
+            self.look = self.faces[coor+dir]
             self.sp.image=store.image [self.look]
             if coor == 0:
                 self.sp.x = store.ct(self.coor[0])
@@ -180,6 +180,10 @@ class Player(object):
             controls.turn()
             self.updateols()
             self.updateitems()
+    def coll(self,direc):
+        if not (self.loc.dirs[direc].passable):
+            return True
+        return False
     def pmove(self,path,step):
         if Path.step < len(path):
             Path.node = path[step]
@@ -205,6 +209,11 @@ class Player(object):
                 self.sp.image= store.image['pchar']
                 self.img = 'pchar'
             controls.turn()
+    def hasitem_name(self,name):
+        for item in self.inv:
+            if item.name == name:
+                return True
+        return False
 class Path(object):
     cost = 0
     tagged = []

@@ -15,8 +15,8 @@ class Tile(Gameobject):
         self.tt = tt
         self.overlays = [] if overlays is None else overlays
         self.functions = [] if functions is None else functions
-        self.dirs = {'xam':None,'xap':None,'yam':None,
-                     'yap':None,'xym':None,'xyp':None,
+        self.dirs = {-1 :None,1 :None,0 :None,
+                     2: None,'xym':None,'xyp':None,
                      'yxm':None,'yxp':None}
         self.adjl = [] if adjl is None else adjl
         self.wadjl = [] if wadjl is None else wadjl
@@ -28,33 +28,31 @@ class Tile(Gameobject):
         if ol == True:
             clist = store.store['spo']
         else: clist = store.store['spt']
-        for sp_tile in clist:
-            if sp_tile == self:
-                if (ol == True and sp_tile.ol == True):
-                    if delete == True:
-                        clist.remove(sp_tile)
-                    return sp_tile
-                elif ol == False:
-                    if delete == True:
-                        clist.remove(sp_tile)
-                    return sp_tile
+        if (ol == True and self.sp.ol == True):
+            if delete == True:
+                clist.remove(self.sp)
+            return sp_tile
+        elif ol == False:
+            if delete == True:
+                clist.remove(self.sp)
+            return self.sp
     def interlace(self,g_tiles):
         for check in g_tiles:
             if (self.coor[0] == check.coor[0] and
                 abs(check.coor[1]-self.coor[1]) == 1):
                 if check.coor[1]-self.coor[1] == -1:
-                    self.dirs['yam'] = check
+                    self.dirs[0] = check
                     self.adjl.append(check)
                 else:
-                    self.dirs['yap'] = check
+                    self.dirs[2] = check
                     self.adjl.append(check)
             elif (self.coor[1] == check.coor[1] and
                   abs(check.coor[0]-self.coor[0]) == 1):
                 if check.coor[0]-self.coor[0] == -1:
-                    self.dirs['xam'] = check
+                    self.dirs[-1] = check
                     self.adjl.append(check)
                 else:
-                    self.dirs['xap'] = check
+                    self.dirs[1] = check
                     self.adjl.append(check)
             else:
                 if (abs(check.coor[0]-self.coor[0]) == 1 and

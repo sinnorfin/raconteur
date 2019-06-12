@@ -95,32 +95,32 @@ def arrange(toarrange,fit=True):
     toarrange.rot = 0
     xac = 0
     yac = 0
-    if (toarrange.dirs['xam'] and
-        toarrange.dirs['xam'].passable == False):
+    if (toarrange.dirs[-1] and
+        toarrange.dirs[-1].passable == False):
         xac= xac+1
-    if (toarrange.dirs['xap'] and
-        toarrange.dirs['xap'].passable == False):
+    if (toarrange.dirs[1] and
+        toarrange.dirs[1].passable == False):
         xac= xac+1
-    if (toarrange.dirs['yam'] and
-        toarrange.dirs['yam'].passable == False):
+    if (toarrange.dirs[0] and
+        toarrange.dirs[0].passable == False):
         yac= yac+1
-    if (toarrange.dirs['yap'] and
-        toarrange.dirs['yap'].passable == False):
+    if (toarrange.dirs[2] and
+        toarrange.dirs[2].passable == False):
         yac= yac+1
     if xac == 0 and yac == 0:
         toarrange.sp.image = store.image['pil']
         toarrange.img = 'pil'
         toarrange.tt = 's'
     elif xac == 1 and yac == 0:
-        if (toarrange.dirs['xap'] and
-            toarrange.dirs['xap'].passable == False):
+        if (toarrange.dirs[1] and
+            toarrange.dirs[1].passable == False):
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=270
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 270
-        elif (toarrange.dirs['xam'] and
-            toarrange.dirs['xam'].passable == False):
+        elif (toarrange.dirs[-1] and
+            toarrange.dirs[-1].passable == False):
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=90
             toarrange.img = 'cap'
@@ -136,24 +136,24 @@ def arrange(toarrange,fit=True):
         if xac+yac == 2:
             toarrange.sp.image=store.image['corner']
             toarrange.img = 'corner'
-            if ((toarrange.dirs['xap'] and
-                toarrange.dirs['yam']) and
-                (toarrange.dirs['xap'].passable == False and
-                toarrange.dirs['yam'].passable == False)):
+            if ((toarrange.dirs[1] and
+                toarrange.dirs[0]) and
+                (toarrange.dirs[1].passable == False and
+                toarrange.dirs[0].passable == False)):
                 toarrange.sp.rotation=0
                 toarrange.tt = 'cse'
                 toarrange.rot = 0
-            elif ((toarrange.dirs['xam'] and
-                toarrange.dirs['yam']) and
-                (toarrange.dirs['xam'].passable == False and
-                toarrange.dirs['yam'].passable == False)):
+            elif ((toarrange.dirs[-1] and
+                toarrange.dirs[0]) and
+                (toarrange.dirs[-1].passable == False and
+                toarrange.dirs[0].passable == False)):
                 toarrange.sp.rotation=90
                 toarrange.tt = 'csw'
                 toarrange.rot = 90
-            elif ((toarrange.dirs['xam'] and
-                toarrange.dirs['yap']) and
-                (toarrange.dirs['xam'].passable == False and
-                toarrange.dirs['yap'].passable == False)):
+            elif ((toarrange.dirs[-1] and
+                toarrange.dirs[2]) and
+                (toarrange.dirs[-1].passable == False and
+                toarrange.dirs[2].passable == False)):
                 toarrange.sp.rotation=180
                 toarrange.tt = 'cnw'
                 toarrange.rot = 180
@@ -164,18 +164,18 @@ def arrange(toarrange,fit=True):
         elif xac+yac == 3:
             toarrange.sp.image=store.image['tsect']
             toarrange.img = 'tsect'
-            if (not toarrange.dirs['xam'] or
-                toarrange.dirs['xam'].passable == True):
+            if (not toarrange.dirs[-1] or
+                toarrange.dirs[-1].passable == True):
                 toarrange.sp.rotation=0
                 toarrange.tt = 'tw'
                 toarrange.rot = 0
-            elif (not toarrange.dirs['yap'] or
-                toarrange.dirs['yap'].passable == True):
+            elif (not toarrange.dirs[2] or
+                toarrange.dirs[2].passable == True):
                 toarrange.sp.rotation=90
                 toarrange.tt = 'tn'
                 toarrange.rot = 90
-            elif (not toarrange.dirs['xap'] or
-                toarrange.dirs['xap'].passable == True):
+            elif (not toarrange.dirs[1] or
+                toarrange.dirs[1].passable == True):
                 toarrange.sp.rotation=180
                 toarrange.tt = 'te'
                 toarrange.rot = 180
@@ -188,15 +188,15 @@ def arrange(toarrange,fit=True):
             toarrange.img = 'fourway'
             toarrange.tt = 'fw'
     else:
-        if (yac == 1 and toarrange.dirs['yam'] and
-            toarrange.dirs['yam'].passable == False):
+        if (yac == 1 and toarrange.dirs[0] and
+            toarrange.dirs[0].passable == False):
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=0
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 0
-        elif (yac == 1 and toarrange.dirs['yap'] and
-            toarrange.dirs['yap'].passable == False):
+        elif (yac == 1 and toarrange.dirs[2] and
+            toarrange.dirs[2].passable == False):
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=180
             toarrange.img = 'cap'
@@ -313,14 +313,6 @@ class Spawn(object):
             if reiter != 0:
                 Spawn.g_object(reiter,type=type)
 #Spawn.g_object(3,type = 'wall')
-def coll(direc):
-    collision = False
-    for g_tile in store.store['gt']:
-        if (g_tile.passable == False and
-            g_tile.coor[1] == direc[0] and g_tile.coor[0] == direc[1]):
-                collision = True
-                return collision
-    return collision
 def fitnext(tile):
     for i in tile:
         i.wadjl = adjlist(i)
