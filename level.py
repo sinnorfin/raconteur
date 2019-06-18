@@ -1,4 +1,5 @@
 import tile
+import pdb
 import _pickle as cPickle
 import random
 import pyglet.window
@@ -86,126 +87,105 @@ def adjlist(tocheck):
     for g_tile in iter(tocheck.dirs.values()):
         if g_tile and g_tile.passable == False:
             adjlist.append(g_tile)
-    for g_tile in iter(tocheck.dirs.values()):
-        if g_tile and g_tile.passable == False:
-            adjlist.append(g_tile)
     return adjlist
+def valid_dirs(tile):
+    valid = []
+    for c in range(4):
+        if (tile.dirs[c-1] is not None):
+            valid.append(c-1)
+    return valid
+def impassable_dirs(tile):
+    dirs = valid_dirs(tile)
+    impassable = []
+    for dir in dirs:
+        if tile.dirs[dir].passable == False:
+            impassable.append(dir)
+    return impassable
 def arrange(toarrange,fit=True):
-    toarrange.sp.rotation = 0
-    toarrange.rot = 0
-    xac = 0
-    yac = 0
-    if (toarrange.dirs[-1] and
-        toarrange.dirs[-1].passable == False):
-        xac= xac+1
-    if (toarrange.dirs[1] and
-        toarrange.dirs[1].passable == False):
-        xac= xac+1
-    if (toarrange.dirs[0] and
-        toarrange.dirs[0].passable == False):
-        yac= yac+1
-    if (toarrange.dirs[2] and
-        toarrange.dirs[2].passable == False):
-        yac= yac+1
-    if xac == 0 and yac == 0:
+    imp_dirs = impassable_dirs(toarrange)
+    nb_imp_dirs = len(imp_dirs)
+    if nb_imp_dirs == 0:
         toarrange.sp.image = store.image['pil']
         toarrange.img = 'pil'
         toarrange.tt = 's'
-    elif xac == 1 and yac == 0:
-        if (toarrange.dirs[1] and
-            toarrange.dirs[1].passable == False):
+    elif nb_imp_dirs == 1:
+        if 1 in imp_dirs:
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=270
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 270
-        elif (toarrange.dirs[-1] and
-            toarrange.dirs[-1].passable == False):
+        elif -1 in imp_dirs:
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=90
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 90
-    elif xac == 2 and yac == 0 :
-        toarrange.sp.rotation=90
-        toarrange.tt = 'x'
-        toarrange.sp.image=store.image['wall']
-        toarrange.img = 'wall'
-        toarrange.rot = 90
-    elif xac != 0 and yac != 0:
-        if xac+yac == 2:
-            toarrange.sp.image=store.image['corner']
-            toarrange.img = 'corner'
-            if ((toarrange.dirs[1] and
-                toarrange.dirs[0]) and
-                (toarrange.dirs[1].passable == False and
-                toarrange.dirs[0].passable == False)):
-                toarrange.sp.rotation=0
-                toarrange.tt = 'cse'
-                toarrange.rot = 0
-            elif ((toarrange.dirs[-1] and
-                toarrange.dirs[0]) and
-                (toarrange.dirs[-1].passable == False and
-                toarrange.dirs[0].passable == False)):
-                toarrange.sp.rotation=90
-                toarrange.tt = 'csw'
-                toarrange.rot = 90
-            elif ((toarrange.dirs[-1] and
-                toarrange.dirs[2]) and
-                (toarrange.dirs[-1].passable == False and
-                toarrange.dirs[2].passable == False)):
-                toarrange.sp.rotation=180
-                toarrange.tt = 'cnw'
-                toarrange.rot = 180
-            else:
-                toarrange.sp.rotation=270
-                toarrange.tt = 'cne'
-                toarrange.rot = 270
-        elif xac+yac == 3:
-            toarrange.sp.image=store.image['tsect']
-            toarrange.img = 'tsect'
-            if (not toarrange.dirs[-1] or
-                toarrange.dirs[-1].passable == True):
-                toarrange.sp.rotation=0
-                toarrange.tt = 'tw'
-                toarrange.rot = 0
-            elif (not toarrange.dirs[2] or
-                toarrange.dirs[2].passable == True):
-                toarrange.sp.rotation=90
-                toarrange.tt = 'tn'
-                toarrange.rot = 90
-            elif (not toarrange.dirs[1] or
-                toarrange.dirs[1].passable == True):
-                toarrange.sp.rotation=180
-                toarrange.tt = 'te'
-                toarrange.rot = 180
-            else:
-                toarrange.sp.rotation=270
-                toarrange.tt = 'ts'
-                toarrange.rot = 270
-        else:
-            toarrange.sp.image=store.image['fourway']
-            toarrange.img = 'fourway'
-            toarrange.tt = 'fw'
-    else:
-        if (yac == 1 and toarrange.dirs[0] and
-            toarrange.dirs[0].passable == False):
+        elif 0 in imp_dirs:
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=0
             toarrange.img = 'cap'
             toarrange.tt = 'xp_c'
             toarrange.rot = 0
-        elif (yac == 1 and toarrange.dirs[2] and
-            toarrange.dirs[2].passable == False):
+        elif 2 in imp_dirs:
             toarrange.sp.image=store.image['cap']
             toarrange.sp.rotation=180
             toarrange.img = 'cap'
             toarrange.tt = 'xm_c'
             toarrange.rot = 180
-        else:
+    elif nb_imp_dirs == 2:
+        if (1 in imp_dirs and -1 in imp_dirs) :
+            toarrange.sp.rotation=90
+            toarrange.tt = 'x'
+            toarrange.sp.image=store.image['wall']
+            toarrange.img = 'wall'
+            toarrange.rot = 90
+        elif (0 in imp_dirs and 2 in imp_dirs):
             toarrange.tt = 'y'
             toarrange.sp.image=store.image['wall']
             toarrange.img = 'wall'
+        elif (imp_dirs != [0,2] and imp_dirs != [-1,1]):
+                toarrange.sp.image=store.image['corner']
+                toarrange.img = 'corner'
+                if imp_dirs == [0,1]:
+                    toarrange.sp.rotation=0
+                    toarrange.tt = 'cse'
+                    toarrange.rot = 0
+                elif imp_dirs == [-1,0]:
+                    toarrange.sp.rotation=90
+                    toarrange.tt = 'csw'
+                    toarrange.rot = 90
+                elif imp_dirs == [-1,2]:
+                    toarrange.sp.rotation=180
+                    toarrange.tt = 'cnw'
+                    toarrange.rot = 180
+                else:
+                    toarrange.sp.rotation=270
+                    toarrange.tt = 'cne'
+                    toarrange.rot = 270
+    elif nb_imp_dirs == 3:
+        toarrange.sp.image=store.image['tsect']
+        toarrange.img = 'tsect'
+        if -1 not in imp_dirs:
+            toarrange.sp.rotation=0
+            toarrange.tt = 'tw'
+            toarrange.rot = 0
+        elif 2 not in imp_dirs:
+            toarrange.sp.rotation=90
+            toarrange.tt = 'tn'
+            toarrange.rot = 90
+        elif 1 not in imp_dirs:
+            toarrange.sp.rotation=180
+            toarrange.tt = 'te'
+            toarrange.rot = 180
+        else:
+            toarrange.sp.rotation=270
+            toarrange.tt = 'ts'
+            toarrange.rot = 270
+    elif nb_imp_dirs == 4:
+        toarrange.sp.image=store.image['fourway']
+        toarrange.img = 'fourway'
+        toarrange.tt = 'fw'
     if fit == True:
         fitnext(toarrange.wadjl)
 class SelBuild(object):
