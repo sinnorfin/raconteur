@@ -8,9 +8,9 @@ from pyglet.window import mouse
 from pyglet.window import key
 
 class Player(tile.Gameobject):
-    def __init__(self, coor, img, id=0,name = 'Player',
+    def __init__(self, coor, img,name = 'Player',
                  inv=None):
-        super(Player, self).__init__(img,id)
+        super(Player, self).__init__(img)
         self.coor = coor
         self.loc = store.findtile(self.coor)
         self.name = name
@@ -57,8 +57,8 @@ class Player(tile.Gameobject):
         distance = [abs(self.coor[0]-target.coor[0]),
                     abs(self.coor[1]-target.coor[1])]
         return distance
-    def player_bordering(self): #searches for spaces around player
-        player_bordering = []   #could be extended to find whatever around player
+    def player_bordering(self):
+        player_bordering = []
         up = self.coor[1] + 1
         down = self.coor[1] - 1
         right = self.coor[0] + 1
@@ -198,7 +198,7 @@ class Player(tile.Gameobject):
             controls.turn()
     def addplayer(self):
         g_newplayer = Player(coor=[self.coor[0]+1,
-                             self.coor[1]+1],img='pchar',id=store.cid)
+                             self.coor[1]+1],img='pchar')
         store.cid +=1
     def cloak(self):
         if not self.cols():

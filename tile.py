@@ -1,14 +1,13 @@
 import store
 class Gameobject(object):
-    def __init__(self,img='',id=0,sp=None):
+    def __init__(self,img='',sp=None):
         self.img = img
-        self.id = id
         self.sp = sp
 class Tile(Gameobject):
-    def __init__(self, img, id=0, coor=[], passable= True,
+    def __init__(self, img, coor=[], passable= True,
                  occup= False, tt= 's',sp = None, overlays=None,
                  functions=None,adjl=None,wadjl=None,rot=0):
-        super(Tile, self).__init__(img,id,sp)
+        super(Tile, self).__init__(img,sp)
         self.coor = coor
         self.passable = passable
         self.occup = occup

@@ -31,7 +31,7 @@ def game():
         store.clevel.levelgen()
         store.cursor = gui.Cursor()
         store.handleraltered = False;
-        g_player = player.Player(coor=[1,1],img='pchar',id=1)
+        g_player = player.Player(coor=[1,1],img='pchar')
         store.cplayer = store.store['gp'][store.inturn]
         controls.sp_topath = store.cplayer
         store.cid = 2
@@ -120,7 +120,7 @@ def on_key_press(symbol,modifiers):
     elif symbol == key.Q:
         store.buildmenu.next()
     elif symbol == key.O:
-        print (len(store.cplayer.player_bordering()))
+        textbox.create()
     elif symbol == key.T:
         label.Typein.firstt = True
         pushhandlers(label.Typein)
@@ -152,13 +152,11 @@ def on_mouse_press(x,y,button,modifiers):
         if (store.rcm[0] and gui.inarea(store.cursor.coor,
             store.clevel.levelarea)):
             store.rcm[1].click([x,y])
-        elif (not store.rcm[0] and gui.inarea(store.cursor.coor,
-            store.clevel.levelarea)):
-            for func in clickloc.functions:
-                if (func.func == 'door' and
-                    level.adj(store.cplayer,
-                                  clickloc)):
-                        func.use(clickloc)
+        elif (level.adj(store.cplayer,clickloc)):
+            if (not store.rcm[0] and gui.inarea(store.cursor.coor,
+                store.clevel.levelarea)):
+                for func in clickloc.functions:
+                    func.use(clickloc)
     elif button == mouse.RIGHT:
         if gui.inarea([x,y],store.clevel.levelarea):
             # menu appears only when right clicked

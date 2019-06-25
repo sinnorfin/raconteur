@@ -1,8 +1,5 @@
 from pyglet.window import key
-
 import store
-import math
-import level
 
 def turn():
     store.inturn += 1

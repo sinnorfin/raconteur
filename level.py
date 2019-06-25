@@ -45,7 +45,7 @@ class Level(pyglet.window.Window):
 
     def levelgen(self):
         if store.store['spt']: dellevel()
-        self.levelarea = Gamearea(1,'level',
+        self.levelarea = Gamearea('level',
                              [[0,store.ts*self.x],
                              [0,store.ts*self.y]])
         gcoor = [0,0]
@@ -62,12 +62,11 @@ class Level(pyglet.window.Window):
         for tile in store.store['gt']:
             tile.interlace(store.store['gt'])
             store.buildmenu.build(tile,'space',
-                                           tile.coor,tile.id)
+                                           tile.coor)
             if len(tile.adjl) != 8:
                 store.buildmenu.build(tile,'wall',tile.coor)
 class Gamearea(object):
-    def __init__(self,id=None,name=None,coor=None):
-        self.id = id
+    def __init__(self,name=None,coor=None):
         self.name = name
         self.coor = coor
 def adj(tocheck, against):
@@ -235,8 +234,7 @@ class SelBuild(object):
         if type == 'door0':
             buildloc.occup = True
             buildloc.passable = False
-            door = element.Door(loc=buildloc,closed=True)
-            buildloc.functions.append(door)
+            buildloc.functions.append(element.Door())
             buildloc.img = 'door0'
             buildloc.sp.image=store.image['door0']
             buildloc.wadjl = adjlist(buildloc)
@@ -244,8 +242,7 @@ class SelBuild(object):
         if type == 'door1':
             buildloc.occup = True
             buildloc.passable = True
-            door = element.Door(loc=buildloc)
-            buildloc.functions.append(door)
+            buildloc.functions.append(element.Door())
             buildloc.img = 'door1'
             buildloc.sp.image=store.image['door1']
             buildloc.wadjl = adjlist(buildloc)
@@ -263,7 +260,7 @@ class SelBuild(object):
                 type = 'none'
             overloc.occup = True
             if type == 'key':
-                key = element.Item(id=element.Item.objid, x=coor[0], y=coor[1],
+                key = element.Item(x=coor[0], y=coor[1],
                            img='key',name='key',
                            loc=overloc,func='item_p')
                 overloc.overlays.append(key)
@@ -301,7 +298,7 @@ def ctile(gcoor,genid):
     var_space = ['space','space_v1','space','space_v2','space_v3']
     g_gen = tile.Tile(img=var_space[random.randint(0,
                    len(var_space)-1)],
-                   id=genid,coor=gcoor,occup=False)
+                   coor=gcoor,occup=False)
     return g_gen
 def ontiles(m_coor,tiles):
     for tile in tiles:
