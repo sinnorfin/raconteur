@@ -100,91 +100,44 @@ def impassable_dirs(tile):
         if tile.dirs[dir].passable == False:
             impassable.append(dir)
     return impassable
-def arrange(toarrange,fit=True):
+def arrange(toarrange,fit=True,rotonly=False):
     imp_dirs = impassable_dirs(toarrange)
     nb_imp_dirs = len(imp_dirs)
     if nb_imp_dirs == 0:
-        toarrange.sp.image = store.image['pil']
-        toarrange.img = 'pil'
-        toarrange.tt = 's'
+        toarrange.mod('pil',0,rotonly)
     elif nb_imp_dirs == 1:
         if 1 in imp_dirs:
-            toarrange.sp.image=store.image['cap']
-            toarrange.sp.rotation=270
-            toarrange.img = 'cap'
-            toarrange.tt = 'xm_c'
-            toarrange.rot = 270
+            toarrange.mod('cap',270,rotonly)
         elif -1 in imp_dirs:
-            toarrange.sp.image=store.image['cap']
-            toarrange.sp.rotation=90
-            toarrange.img = 'cap'
-            toarrange.tt = 'xp_c'
-            toarrange.rot = 90
+            toarrange.mod('cap',90,rotonly)
         elif 0 in imp_dirs:
-            toarrange.sp.image=store.image['cap']
-            toarrange.sp.rotation=0
-            toarrange.img = 'cap'
-            toarrange.tt = 'xp_c'
-            toarrange.rot = 0
+            toarrange.mod('cap',0,rotonly)
         elif 2 in imp_dirs:
-            toarrange.sp.image=store.image['cap']
-            toarrange.sp.rotation=180
-            toarrange.img = 'cap'
-            toarrange.tt = 'xm_c'
-            toarrange.rot = 180
+            toarrange.mod('cap',180,rotonly)
     elif nb_imp_dirs == 2:
         if (1 in imp_dirs and -1 in imp_dirs) :
-            toarrange.sp.rotation=90
-            toarrange.tt = 'x'
-            toarrange.sp.image=store.image['wall']
-            toarrange.img = 'wall'
-            toarrange.rot = 90
+            toarrange.mod('wall',90,rotonly)
         elif (0 in imp_dirs and 2 in imp_dirs):
-            toarrange.tt = 'y'
-            toarrange.sp.image=store.image['wall']
-            toarrange.img = 'wall'
+            toarrange.mod('wall',0,rotonly)
         elif (imp_dirs != [0,2] and imp_dirs != [-1,1]):
-                toarrange.sp.image=store.image['corner']
-                toarrange.img = 'corner'
                 if imp_dirs == [0,1]:
-                    toarrange.sp.rotation=0
-                    toarrange.tt = 'cse'
-                    toarrange.rot = 0
+                    toarrange.mod('corner',0,rotonly)
                 elif imp_dirs == [-1,0]:
-                    toarrange.sp.rotation=90
-                    toarrange.tt = 'csw'
-                    toarrange.rot = 90
+                    toarrange.mod('corner',90,rotonly)
                 elif imp_dirs == [-1,2]:
-                    toarrange.sp.rotation=180
-                    toarrange.tt = 'cnw'
-                    toarrange.rot = 180
-                else:
-                    toarrange.sp.rotation=270
-                    toarrange.tt = 'cne'
-                    toarrange.rot = 270
+                    toarrange.mod('corner',180,rotonly)
+                else: toarrange.mod('corner',270,rotonly)
     elif nb_imp_dirs == 3:
-        toarrange.sp.image=store.image['tsect']
-        toarrange.img = 'tsect'
         if -1 not in imp_dirs:
-            toarrange.sp.rotation=0
-            toarrange.tt = 'tw'
-            toarrange.rot = 0
+            toarrange.mod('tsect',0,rotonly)
         elif 2 not in imp_dirs:
-            toarrange.sp.rotation=90
-            toarrange.tt = 'tn'
-            toarrange.rot = 90
+            toarrange.mod('tsect',90,rotonly)
         elif 1 not in imp_dirs:
-            toarrange.sp.rotation=180
-            toarrange.tt = 'te'
-            toarrange.rot = 180
+            toarrange.mod('tsect',180,rotonly)
         else:
-            toarrange.sp.rotation=270
-            toarrange.tt = 'ts'
-            toarrange.rot = 270
+            toarrange.mod('tsect',270,rotonly)
     elif nb_imp_dirs == 4:
-        toarrange.sp.image=store.image['fourway']
-        toarrange.img = 'fourway'
-        toarrange.tt = 'fw'
+        toarrange.mod('fourway',0,rotonly)
     if fit == True:
         fitnext(toarrange.wadjl)
 class SelBuild(object):
@@ -237,16 +190,18 @@ class SelBuild(object):
             buildloc.functions.append(element.Door())
             buildloc.img = 'door0'
             buildloc.sp.image=store.image['door0']
+            buildloc.fix_img = True
             buildloc.wadjl = adjlist(buildloc)
-            arrange(buildloc)
+            arrange(buildloc,rotonly=True)
         if type == 'door1':
             buildloc.occup = True
             buildloc.passable = True
             buildloc.functions.append(element.Door())
             buildloc.img = 'door1'
             buildloc.sp.image=store.image['door1']
+            buildloc.fix_img = True
             buildloc.wadjl = adjlist(buildloc)
-            arrange(buildloc)
+            arrange(buildloc,rotonly=True)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
         overloc = store.findtile(coor)
@@ -293,7 +248,7 @@ class Spawn(object):
 def fitnext(tile):
     for i in tile:
         i.wadjl = adjlist(i)
-        arrange(i,False)
+        arrange(i,False,i.fix_img)
 def ctile(gcoor,genid):
     var_space = ['space','space_v1','space','space_v2','space_v3']
     g_gen = tile.Tile(img=var_space[random.randint(0,

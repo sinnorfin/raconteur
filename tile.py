@@ -5,13 +5,13 @@ class Gameobject(object):
         self.sp = sp
 class Tile(Gameobject):
     def __init__(self, img, coor=[], passable= True,
-                 occup= False, tt= 's',sp = None, overlays=None,
-                 functions=None,adjl=None,wadjl=None,rot=0):
+                 occup= False,sp = None, overlays=None,
+                 functions=None,adjl=None,wadjl=None,
+                 fix_img = False):
         super(Tile, self).__init__(img,sp)
         self.coor = coor
         self.passable = passable
         self.occup = occup
-        self.tt = tt
         self.overlays = [] if overlays is None else overlays
         self.functions = [] if functions is None else functions
         self.dirs = {-1 :None,1 :None,0 :None,
@@ -19,7 +19,10 @@ class Tile(Gameobject):
                      'yxm':None,'yxp':None}
         self.adjl = [] if adjl is None else adjl
         self.wadjl = [] if wadjl is None else wadjl
-        self.rot = rot
+        self.fix_img = fix_img
+    def mod(self,img='',ang=0,rotonly=False):
+        if not rotonly: self.sp.image=store.image[img]
+        self.sp.rotation=ang
     def connect(self,ol=False,delete=False):
         #ol - limits connects to overlays
         #delete - removes sprite from list
