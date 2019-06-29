@@ -129,9 +129,9 @@ def on_key_press(symbol,modifiers):
         store.cplayer.moveg()
 @store.clevel.event
 def on_mouse_motion(x,y,dx,dy):
-    if (x+store.ats > store.cursor.mposx + store.ts or
+    if (x+store.ats > store.cursor.mposx or
         x+store.ats < store.cursor.mposx or
-        y+store.ats > store.cursor.mposy + store.ts or
+        y+store.ats > store.cursor.mposy or
         y+store.ats < store.cursor.mposy ):
         if gui.inarea([x,y],store.clevel.levelarea):
             store.cursor.xcoor = math.floor(x/store.ts)

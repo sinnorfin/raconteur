@@ -30,7 +30,7 @@ class Button(object):
     def press(self):
         self.function()
         print ('you pressed %s' % self.img)
-class Menu():
+class Frame():
     pass
     def __init__(self,o_coor,gtype,clickloc):
             self.o_coor = o_coor
@@ -62,18 +62,16 @@ class Gui(object):
         if gtype == 'rcm' and store.cursor.onarea == 'l':
                 store.rcm[0] = True
                 self.rightclickmenu()
-    def rightclickmenu(self):
-        for f in self.clickloc.functions:
-            for button in f.buttons:
+    def add_buttons(self,source):
+        for elem in source:
+            for button in elem.buttons:
                 self.buttons.append(Button(button[0],button[1]))
-        for f in self.clickloc.overlays: #generator
-            if max(store.prange(self.clickloc)) == 0:
-                if hasattr(f,'func') and f.func == 'item_p':
-                    pickup_but = Button('c_pickup',element.pickup)
-                    self.buttons.append(pickup_but)
-        if store.cplayer.inv:
-            drop_but = Button('c_drop',element.drop)
-            self.buttons.append(drop_but)
+    def rightclickmenu(self):
+        if self.clickloc in store.cplayer.loc.adjl:
+            self.add_buttons(self.clickloc.functions)
+        if self.clickloc is store.cplayer.loc:
+            self.add_buttons(self.clickloc.overlays)
+            self.add_buttons(store.cplayer.inv)
         self.fitmenu(len(self.buttons)+1)
         self.refresh_menu()
     def fitmenu(self,c):

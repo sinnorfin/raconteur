@@ -224,7 +224,6 @@ class SelBuild(object):
                                         img=store.getim(key),
                                         batch=store.item_bt)
                 store.store['spo'].append(key.sp)
-                element.Item.objid += 1
 class Spawn(object):
     reiterlist = []
     @staticmethod
