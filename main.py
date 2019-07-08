@@ -30,6 +30,7 @@ def game():
         store.buildmenu = level.SelBuild()
         store.clevel.levelgen()
         store.cursor = gui.Cursor()
+        store.rcm = [False]
         store.handleraltered = False;
         g_player = player.Player(coor=[1,1],img='pchar')
         store.cplayer = store.store['gp'][store.inturn]
@@ -120,7 +121,8 @@ def on_key_press(symbol,modifiers):
     elif symbol == key.Q:
         store.buildmenu.next()
     elif symbol == key.O:
-        textbox.create()
+        newtext = gui.Textbox([store.cursor.mposx,store.cursor.mposy],
+                        store.findtile(store.cursor.coor),"Szoveg")
     elif symbol == key.T:
         label.Typein.firstt = True
         pushhandlers(label.Typein)
@@ -163,7 +165,7 @@ def on_mouse_press(x,y,button,modifiers):
             # on actual level area of window
             if store.rcm[0]:
                gui.Gui.killrcm()
-            rcm = gui.Gui([x,y],'rcm',clickloc)
+            rcm = gui.Rightclickmenu([x,y],clickloc)
             store.rcm.append(rcm)
     elif button == mouse.MIDDLE:
         print (len(clickloc.functions))

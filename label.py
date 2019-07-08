@@ -3,6 +3,9 @@ import controls
 import store
 from pyglet.window import key
 
+def get_text_size(font,size):
+    Font = pyglet.font.load('font',size)
+    return (Font.ascent + Font.Descent)
 def create(label):
     store.playername_label = pyglet.text.Label(label,
                                     'Courier_new',30,

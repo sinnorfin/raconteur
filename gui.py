@@ -3,11 +3,9 @@ import pyglet.text
 import store
 import level
 import element
+import label
 import pdb
 
-class Textbox(object):
-    def __init__(self,text):
-        self.text = text
 
 def inarea(m_coor,area):
     if (m_coor[0] >= area.coor[0][0] and
@@ -30,50 +28,17 @@ class Button(object):
     def press(self):
         self.function()
         print ('you pressed %s' % self.img)
-class Frame():
-    pass
-    def __init__(self,o_coor,gtype,clickloc):
+class Frame(object):
+    def __init__(self,o_coor,clickloc):
             self.o_coor = o_coor
-            self.gtype = gtype
             self.clickloc = clickloc
             self.orig = [0,0]
             self.size = [80,50]
             self.buttons = []
-    def fitmenu(self,c):
-        pass
-    def refresh_menu(self):
-        pass
-    def click(self,m_coor):
-        pass
-class Rightclickmenu():
-    pass
-    def rightclickmenu(self):
-        pass
-class Gui(object):
-    rcmhead = Button('c_menu')
-    store.rcm = [False]
-    def __init__(self,o_coor,gtype,clickloc):
-        self.o_coor = o_coor
-        self.gtype = gtype
-        self.clickloc = clickloc
-        self.orig = [0,0]
-        self.size = [80,50]
-        self.buttons = []
-        if gtype == 'rcm' and store.cursor.onarea == 'l':
-                store.rcm[0] = True
-                self.rightclickmenu()
     def add_buttons(self,source):
         for elem in source:
             for button in elem.buttons:
                 self.buttons.append(Button(button[0],button[1]))
-    def rightclickmenu(self):
-        if self.clickloc in store.cplayer.loc.adjl:
-            self.add_buttons(self.clickloc.functions)
-        if self.clickloc is store.cplayer.loc:
-            self.add_buttons(self.clickloc.overlays)
-            self.add_buttons(store.cplayer.inv)
-        self.fitmenu(len(self.buttons)+1)
-        self.refresh_menu()
     def fitmenu(self,c):
         fitx = False
         fity = False
@@ -92,11 +57,10 @@ class Gui(object):
             self.o_coor[1] = self.o_coor[1]+self.size[1]*c
         self.orig = self.o_coor
     def refresh_menu(self):
-        Gui.rcmhead.drawbut([self.orig[0],self.orig[1] - 50])
+        self.rcmhead.drawbut([self.orig[0],self.orig[1] - 50])
         for b in self.buttons:
             b.drawbut([self.orig[0],self.orig[1] - 100 -
                       self.buttons.index(b)*self.size[1]])
-        #self.size helyett button size
     def click(self,m_coor):
         for b in self.buttons:
             button = level.Gamearea(coor=[[b.o_coor[0],
@@ -105,12 +69,44 @@ class Gui(object):
                               b.o_coor[1]+store.image[b.img].height]])
             if inarea(m_coor,button):
                 b.press()
-        Gui.killrcm()
-    @staticmethod
-    def killrcm():
+        self.killrcm()
+    def killrcm(self):
         store.rcm.pop()
         store.rcm[0] = False
         store.store['spg'] = []
+class Rightclickmenu(Frame):
+    def __init__(self,o_coor,clickloc):
+        super(Rightclickmenu, self).__init__(o_coor,clickloc)
+        self.orig = [0,0]
+        self.size = [80,50]
+        self.buttons = []
+        self.rcmhead = Button('c_menu')
+        if store.cursor.onarea == 'l':
+                store.rcm[0] = True
+                self.rightclickmenu()
+    def rightclickmenu(self):
+        if self.clickloc in store.cplayer.loc.adjl:
+            self.add_buttons(self.clickloc.functions)
+        if self.clickloc is store.cplayer.loc:
+            self.add_buttons(self.clickloc.overlays)
+            self.add_buttons(store.cplayer.inv)
+        self.fitmenu(len(self.buttons)+1)
+        self.refresh_menu()
+class Textbox(Frame):
+    def __init__(self,o_coor,clickloc,text):
+        super(Textbox, self).__init__(o_coor,clickloc)
+        self.text = text
+        self.rcmhead = Button('c_menu')
+        self.size = [0,0]
+        self.display()
+    def display(self):
+        text = pyglet.text.Label(self.text,
+                                'Courier_new',14,
+                                x= self.o_coor[0],
+                                y = self.o_coor[1],
+                                anchor_x = 'left',
+                                anchor_y = 'center',
+                                batch = store.menu_bt)
 class Cursor(object):
     def __init__(self):
         self.mposx = store.ats
