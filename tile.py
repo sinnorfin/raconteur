@@ -38,6 +38,19 @@ class Tile(Gameobject):
             if delete == True:
                 clist.remove(self.sp)
             return self.sp
+    def valid_dirs(self):
+        valid = []
+        for c in range(4):
+            if (self.dirs[c-1]):
+                valid.append(c-1)
+        return valid
+    def impassable_dirs(self):
+        dirs = self.valid_dirs()
+        impassable = []
+        for dir in dirs:
+            if self.dirs[dir].passable == False:
+                impassable.append(dir)
+        return impassable
     def interlace(self,g_tiles):
         for check in g_tiles:
             if (self.coor[0] == check.coor[0] and

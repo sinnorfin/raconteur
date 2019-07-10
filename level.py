@@ -87,59 +87,50 @@ def adjlist(tocheck):
         if g_tile and g_tile.passable == False:
             adjlist.append(g_tile)
     return adjlist
-def valid_dirs(tile):
-    valid = []
-    for c in range(4):
-        if (tile.dirs[c-1] is not None):
-            valid.append(c-1)
-    return valid
-def impassable_dirs(tile):
-    dirs = valid_dirs(tile)
-    impassable = []
-    for dir in dirs:
-        if tile.dirs[dir].passable == False:
-            impassable.append(dir)
-    return impassable
-def arrange(toarrange,fit=True,rotonly=False):
-    imp_dirs = impassable_dirs(toarrange)
+def arrange(tile,fit=True,rotonly=False):
+    imp_dirs = tile.impassable_dirs()
     nb_imp_dirs = len(imp_dirs)
     if nb_imp_dirs == 0:
-        toarrange.mod('pil',0,rotonly)
+        tile.mod('pil',0,rotonly)
     elif nb_imp_dirs == 1:
         if 1 in imp_dirs:
-            toarrange.mod('cap',270,rotonly)
+            tile.mod('cap',270,rotonly)
         elif -1 in imp_dirs:
-            toarrange.mod('cap',90,rotonly)
+            tile.mod('cap',90,rotonly)
         elif 0 in imp_dirs:
-            toarrange.mod('cap',0,rotonly)
+            tile.mod('cap',0,rotonly)
         elif 2 in imp_dirs:
-            toarrange.mod('cap',180,rotonly)
+            tile.mod('cap',180,rotonly)
     elif nb_imp_dirs == 2:
         if (1 in imp_dirs and -1 in imp_dirs) :
-            toarrange.mod('wall',90,rotonly)
+            tile.mod('wall',90,rotonly)
         elif (0 in imp_dirs and 2 in imp_dirs):
-            toarrange.mod('wall',0,rotonly)
+            tile.mod('wall',0,rotonly)
         elif (imp_dirs != [0,2] and imp_dirs != [-1,1]):
                 if imp_dirs == [0,1]:
-                    toarrange.mod('corner',0,rotonly)
+                    tile.mod('corner',0,rotonly)
                 elif imp_dirs == [-1,0]:
-                    toarrange.mod('corner',90,rotonly)
+                    tile.mod('corner',90,rotonly)
                 elif imp_dirs == [-1,2]:
-                    toarrange.mod('corner',180,rotonly)
-                else: toarrange.mod('corner',270,rotonly)
+                    tile.mod('corner',180,rotonly)
+                else: tile.mod('corner',270,rotonly)
     elif nb_imp_dirs == 3:
         if -1 not in imp_dirs:
-            toarrange.mod('tsect',0,rotonly)
+            tile.mod('tsect',0,rotonly)
         elif 2 not in imp_dirs:
-            toarrange.mod('tsect',90,rotonly)
+            tile.mod('tsect',90,rotonly)
         elif 1 not in imp_dirs:
-            toarrange.mod('tsect',180,rotonly)
+            tile.mod('tsect',180,rotonly)
         else:
-            toarrange.mod('tsect',270,rotonly)
+            tile.mod('tsect',270,rotonly)
     elif nb_imp_dirs == 4:
-        toarrange.mod('fourway',0,rotonly)
-    if fit == True:
-        fitnext(toarrange.wadjl)
+        tile.mod('fourway',0,rotonly)
+    if fit == True and tile is not None:
+        #fitnext(tile.dirs)
+         for tile in tile.adjl:
+             if tile is not None:
+                 tile.wadjl = tile.impassable_dirs()
+                 arrange(tile,False,tile.fix_img)
 class SelBuild(object):
     def __init__(self):
         self.c = [0,False]
@@ -164,7 +155,6 @@ class SelBuild(object):
                                         anchor_x = 'center',
                                         anchor_y = 'center')
     def build(self,buildloc,type,gcoor,inid=0):
-        #sp_built = None
         scoor = [store.ct(gcoor[0]),
                  store.ct(gcoor[1])]
         if type != 'space' and buildloc.occup == True:
@@ -191,7 +181,7 @@ class SelBuild(object):
             buildloc.img = 'door0'
             buildloc.sp.image=store.image['door0']
             buildloc.fix_img = True
-            buildloc.wadjl = adjlist(buildloc)
+            buildloc.wadjl = buildloc.impassable_dirs()
             arrange(buildloc,rotonly=True)
         if type == 'door1':
             buildloc.occup = True
@@ -200,7 +190,7 @@ class SelBuild(object):
             buildloc.img = 'door1'
             buildloc.sp.image=store.image['door1']
             buildloc.fix_img = True
-            buildloc.wadjl = adjlist(buildloc)
+            buildloc.wadjl = buildloc.impassable_dirs()
             arrange(buildloc,rotonly=True)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
@@ -243,11 +233,11 @@ class Spawn(object):
                 else: reiter += 1
             if reiter != 0:
                 Spawn.g_object(reiter,type=type)
-#Spawn.g_object(3,type = 'wall')
-def fitnext(tile):
-    for i in tile:
-        i.wadjl = adjlist(i)
-        arrange(i,False,i.fix_img)
+def fitnext(tiles):
+    for tile in iter(tiles.values()) :
+        if tile is not None:
+            tile.wadjl = tile.impassable_dirs()
+            arrange(tile,False,tile.fix_img)
 def ctile(gcoor,genid):
     var_space = ['space','space_v1','space','space_v2','space_v3']
     g_gen = tile.Tile(img=var_space[random.randint(0,
