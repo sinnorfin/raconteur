@@ -126,11 +126,10 @@ def arrange(tile,fit=True,rotonly=False):
     elif nb_imp_dirs == 4:
         tile.mod('fourway',0,rotonly)
     if fit == True and tile is not None:
-        #fitnext(tile.dirs)
-         for tile in tile.adjl:
-             if tile is not None:
-                 tile.wadjl = tile.impassable_dirs()
-                 arrange(tile,False,tile.fix_img)
+         for fittile in tile.wadjl:
+             if fittile is not None:
+                 fittile.wadjl = fittile.impassable_dirs()
+                 arrange(fittile,False,fittile.fix_img)
 class SelBuild(object):
     def __init__(self):
         self.c = [0,False]
@@ -172,7 +171,7 @@ class SelBuild(object):
             buildloc.img = var_wall[random.randint(0,
                                     len(var_wall)-1)]
             buildloc.sp.image =store.image[buildloc.img]
-            buildloc.wadjl = adjlist(buildloc)
+            buildloc.wadjl = buildloc.impassable_dirs(True)
             arrange(buildloc)
         if type == 'door0':
             buildloc.occup = True
@@ -181,7 +180,7 @@ class SelBuild(object):
             buildloc.img = 'door0'
             buildloc.sp.image=store.image['door0']
             buildloc.fix_img = True
-            buildloc.wadjl = buildloc.impassable_dirs()
+            buildloc.wadjl = buildloc.impassable_dirs(True)
             arrange(buildloc,rotonly=True)
         if type == 'door1':
             buildloc.occup = True
@@ -190,7 +189,7 @@ class SelBuild(object):
             buildloc.img = 'door1'
             buildloc.sp.image=store.image['door1']
             buildloc.fix_img = True
-            buildloc.wadjl = buildloc.impassable_dirs()
+            buildloc.wadjl = buildloc.impassable_dirs(True)
             arrange(buildloc,rotonly=True)
     @staticmethod
     def overlay(overloc,type,coor,inid=0):
@@ -233,11 +232,6 @@ class Spawn(object):
                 else: reiter += 1
             if reiter != 0:
                 Spawn.g_object(reiter,type=type)
-def fitnext(tiles):
-    for tile in iter(tiles.values()) :
-        if tile is not None:
-            tile.wadjl = tile.impassable_dirs()
-            arrange(tile,False,tile.fix_img)
 def ctile(gcoor,genid):
     var_space = ['space','space_v1','space','space_v2','space_v3']
     g_gen = tile.Tile(img=var_space[random.randint(0,

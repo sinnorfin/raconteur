@@ -41,15 +41,18 @@ class Tile(Gameobject):
     def valid_dirs(self):
         valid = []
         for c in range(4):
-            if (self.dirs[c-1]):
+            if (self.dirs[c-1] is not None):
                 valid.append(c-1)
         return valid
-    def impassable_dirs(self):
+    def impassable_dirs(self,tiles=False):
         dirs = self.valid_dirs()
         impassable = []
         for dir in dirs:
             if self.dirs[dir].passable == False:
-                impassable.append(dir)
+                if not tiles:
+                    impassable.append(dir)
+                else:
+                    impassable.append(self.dirs[dir])
         return impassable
     def interlace(self,g_tiles):
         for check in g_tiles:

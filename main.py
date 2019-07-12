@@ -164,7 +164,7 @@ def on_mouse_press(x,y,button,modifiers):
             # menu appears only when right clicked
             # on actual level area of window
             if store.rcm[0]:
-               gui.Gui.killrcm()
+               store.rcm[0].Gui.killrcm()
             rcm = gui.Rightclickmenu([x,y],clickloc)
             store.rcm.append(rcm)
     elif button == mouse.MIDDLE:

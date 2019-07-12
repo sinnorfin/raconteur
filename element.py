@@ -11,12 +11,14 @@ class Item(Tile):
         self.func = func
         self.buttons = [['c_pickup',self.pickup]]
     def pickup(self):
-        store.cplayer.loc.overlays[:] = [x for x in store.cplayer.loc.overlays
-        if x is not self]
+        store.cplayer.loc.overlays[:] = [x for x in
+            store.cplayer.loc.overlays if x is not self]
+        store.cplayer.loc.occup = False
         store.cplayer.inv.append(self)
         self.buttons[0]=(['c_drop',self.drop])
     def drop(self):
         store.cplayer.loc.overlays.append(self)
+        store.cplayer.loc.occup = True
         store.cplayer.inv.remove(self)
         self.buttons[0]=(['c_pickup',self.pickup])
 class Door(object):
