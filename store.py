@@ -16,10 +16,6 @@ def findtile(coor):
             return g_tile
 def getim(obj):
     return image[obj.img]
-def prange(loc):
-    range =cplayer.distance(loc)
-    # range[0] = distance in absolute units on x axis [1] = y axis
-    return range
 def center_tile(im): # puts anchor to image center
     im.anchor_x = im.width / 2
     im.anchor_y = im.height / 2

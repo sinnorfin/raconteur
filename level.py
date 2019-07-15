@@ -69,24 +69,10 @@ class Gamearea(object):
     def __init__(self,name=None,coor=None):
         self.name = name
         self.coor = coor
-def adj(tocheck, against):
-    if (against.coor[0] == tocheck.coor[0] + 1 and
-        against.coor[1] == tocheck.coor[1] or
-        against.coor[0] == tocheck.coor[0] - 1 and
-        against.coor[1] == tocheck.coor[1] or
-        against.coor[1] == tocheck.coor[1] + 1 and
-        against.coor[0] == tocheck.coor[0] or
-        against.coor[1] == tocheck.coor[1] - 1 and
-        against.coor[0] == tocheck.coor[0]) :
-        adj = True
-    else: adj = False
-    return adj
-def adjlist(tocheck):
-    adjlist = []
-    for g_tile in iter(tocheck.dirs.values()):
-        if g_tile and g_tile.passable == False:
-            adjlist.append(g_tile)
-    return adjlist
+def adj(tile_a, tile_b):
+    for dir in range(4):
+        if tile_a == tile_b.dirs[dir-1]: return True
+    return False
 def arrange(tile,fit=True,rotonly=False):
     imp_dirs = tile.impassable_dirs()
     nb_imp_dirs = len(imp_dirs)

@@ -3,7 +3,6 @@ import pdb
 import pyglet
 import math
 
-
 import store
 import player
 import gui
@@ -154,7 +153,7 @@ def on_mouse_press(x,y,button,modifiers):
         if (store.rcm[0] and gui.inarea(store.cursor.coor,
             store.clevel.levelarea)):
             store.rcm[1].click([x,y])
-        elif (level.adj(store.cplayer,clickloc)):
+        elif (level.adj(store.cplayer.loc,clickloc)):
             if (not store.rcm[0] and gui.inarea(store.cursor.coor,
                 store.clevel.levelarea)):
                 for func in clickloc.functions:
@@ -164,7 +163,7 @@ def on_mouse_press(x,y,button,modifiers):
             # menu appears only when right clicked
             # on actual level area of window
             if store.rcm[0]:
-               store.rcm[0].Gui.killrcm()
+               store.rcm[1].killrcm()
             rcm = gui.Rightclickmenu([x,y],clickloc)
             store.rcm.append(rcm)
     elif button == mouse.MIDDLE:
