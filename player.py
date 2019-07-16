@@ -46,13 +46,11 @@ class Player(tile.Gameobject):
             item.y = self.coor[1]
             item.loc = self.loc
     def cols(self):
-        collision = False
         for g_tile in store.store['gt']:
             if (g_tile.passable == False and
                 g_tile.coor == self.coor):
-                    collision = True
-            else:collision = False
-        return collision
+                    return True
+        return False
     def distance(self,target):
         distance = [abs(self.coor[0]-target.coor[0]),
                     abs(self.coor[1]-target.coor[1])]
@@ -98,7 +96,7 @@ class Player(tile.Gameobject):
                     add = True
                     ckcoll = [self.coor[1],left]
             if (add == True and
-                self.cols([ckcoll[0],ckcoll[1]]) == False):
+                not self.cols([ckcoll[0],ckcoll[1]])):
                     player_bordering.append(g_tile)
         return player_bordering
     def pathing(self):
@@ -241,7 +239,7 @@ class Path(object):
     @staticmethod
     def on_key_press(symbol,modifiers):
         if symbol == key.ESCAPE:
-            self.game_window.pop_handlers()
+            store.clevel.pop_handlers()
             store.handleraltered = False
             Path.clean_Path()
             del Path.ptagged[:]

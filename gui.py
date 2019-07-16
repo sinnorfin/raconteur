@@ -40,21 +40,17 @@ class Frame(object):
             for button in elem.buttons:
                 self.buttons.append(Button(button[0],button[1]))
     def fitmenu(self,c):
-        fitx = False
-        fity = False
-        if (self.o_coor[0]+self.size[0] >
-            store.clevel.levelarea.coor[0][1]):
-            fitx = True
-        if (self.o_coor[1]-self.size[1]*c <
-            store.clevel.levelarea.coor[1][0]):
-            fity = True
-        if fitx == True and fity == True:
-            self.o_coor[0] = self.o_coor[0]-self.size[0]
-            self.o_coor[1] = self.o_coor[1]-self.size[1]*c
-        elif fitx == True:
-            self.o_coor[0] = self.o_coor[0]-self.size[0]
-        elif fity == True:
-            self.o_coor[1] = self.o_coor[1]+self.size[1]*c
+        fitx = (self.o_coor[0]+self.size[0] >
+                store.clevel.levelarea.coor[0][1])
+        fity = (self.o_coor[1]-self.size[1]*c <
+                store.clevel.levelarea.coor[1][0])
+        if fitx and fity:
+            self.o_coor[0] -= self.size[0]
+            self.o_coor[1] -= self.size[1]*c
+        elif fitx:
+            self.o_coor[0] -= self.size[0]
+        elif fity:
+            self.o_coor[1] += self.size[1]*c
         self.orig = self.o_coor
     def refresh_menu(self):
         self.rcmhead.drawbut([self.orig[0],self.orig[1] - 50])

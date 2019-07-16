@@ -232,11 +232,8 @@ def ontiles(m_coor,tiles):
             m_coor[1] <= store.ct(tile.coor[1])+store.ats):
             return True
 def standon(tocheck, against):
-    if (against.coor[0] == tocheck.x and
-        against.coor[1] == tocheck.y) :
-        standon = True
-    else: standon = False
-    return standon
+    return (against.coor[0] == tocheck.x and
+            against.coor[1] == tocheck.y)
 def savelevel():
     savelev = open('saved_level','wb')
     saved_tiles = store.store['gt']
