@@ -5,6 +5,8 @@ import random
 import pyglet.window
 import store
 import element
+import math
+from pyglet.gl import *
 
 class Level(pyglet.window.Window):
     def __init__(self,x=10,y=10,tset=None):
@@ -15,34 +17,35 @@ class Level(pyglet.window.Window):
                                   + store.ts * 3,
                                     self.y * store.ts
                                   + store.ts,
-                                    resizable= False)
+                                    resizable = True)
         self.xsize = self.width
         self.xcenter = self.xsize / 2
         self.ysize = self.height
         self.ycenter = self.ysize / 2
+        glOrtho(0, self.width, 0, self.height, -10, 10)
+    def adjust_resize(self):
+        if (self.xsize != self.width or self.ysize != self.height):
+            scaleto = self.width / self.xsize
+            print(scaleto)
+            store.ts = store.ts * scaleto
+            store.ats = store.ts/2
+            self.xsize = self.width
+            self.ysize = self.height
 
-    # def on_resize(self,width,height):
-    #     store.ts
-    #     store.ats
-    #     self.xsize
-    #     self.ysize
-    #     if width - 50 > self.xsize or width + 50 < self.xsize:
-    #         scaleto = float(width) / float(self.xsize)
+    def on_resize(self,width,height):
+        glViewport(0,0,width,height)
+        #store.ts
+        #store.ats
+        if (math.fabs(width - self.xsize)<50) or (math.fabs(height - self.ysize)<50):
     #         scaletoint = scaleto*10000
     #         scaletoint = int(scaletoint)
     #         scaletoint = float(scaletoint)/10000
-    #         glscalef(scaletoint, scaletoint, scaletoint)
-    #         store.ts = store.ts * scaletoint
-    #         store.ats = store.ts/2
     #         cursor.cursor.x = cursor.cursor.x * scaletoint
     #         cursor.cursor.y = cursor.cursor.y * scaletoint
     #         #cursor.mposx = cursor.mposx * scaletoint
     #         #cursor.mposy = cursor.mposy * scaletoint
-    #         self.xsize = width*scaletoint
-    #         self.ysize = height*scaletoint
-    #     width = self.xsize
-    #     height = self.ysize
-
+            self.width = self.xsize
+            self.height = self.ysize
     def levelgen(self):
         if store.store['spt']: dellevel()
         self.levelarea = Gamearea('level',
