@@ -13,30 +13,38 @@ class Level(pyglet.window.Window):
         self.x = x
         self.y = y
         self.tset = tset
+        self.xframe = store.ts *3
+        self.yframe = store.ts
         super(Level, self).__init__(self.x * store.ts
-                                  + store.ts * 3,
+                                  + self.xframe,
                                     self.y * store.ts
-                                  + store.ts,
+                                  + self.yframe,
                                     resizable = True)
         self.xsize = self.width
         self.xcenter = self.xsize / 2
         self.ysize = self.height
         self.ycenter = self.ysize / 2
+        self.maximized = False
         glOrtho(0, self.width, 0, self.height, -10, 10)
-    def adjust_resize(self):
+    def ifmaximized(self):
         if (self.xsize != self.width or self.ysize != self.height):
-            scaleto = self.width / self.xsize
-            print(scaleto)
-            store.ts = store.ts * scaleto
+            self.maximized = True
+            print("maximized!")
+    def adjust_resize(self):
+        if ((self.xsize != self.width or self.ysize != self.height) and not self.maximized):
+            store.ts = int(self.width/self.x)
+            self.xframe = store.ts *3
+            self.yframe = store.ts
+            self.xsize = self.x*store.ts + self.xframe
+            self.ysize = self.y*store.ts + self.yframe
             store.ats = store.ts/2
-            self.xsize = self.width
-            self.ysize = self.height
-
+            self.width = self.xsize
+            self.height = self.ysize
+            glViewport(0,0,self.width,self.height)
+            self.ifmaximized()
     def on_resize(self,width,height):
-        glViewport(0,0,width,height)
-        #store.ts
-        #store.ats
-        if (math.fabs(width - self.xsize)<50) or (math.fabs(height - self.ysize)<50):
+        self.maximized = False
+            #self.set_size(self.width,self.width*self.aspectratio)
     #         scaletoint = scaleto*10000
     #         scaletoint = int(scaletoint)
     #         scaletoint = float(scaletoint)/10000
@@ -44,13 +52,13 @@ class Level(pyglet.window.Window):
     #         cursor.cursor.y = cursor.cursor.y * scaletoint
     #         #cursor.mposx = cursor.mposx * scaletoint
     #         #cursor.mposy = cursor.mposy * scaletoint
-            self.width = self.xsize
-            self.height = self.ysize
     def levelgen(self):
         if store.store['spt']: dellevel()
         self.levelarea = Gamearea('level',
                              [[0,store.ts*self.x],
-                             [0,store.ts*self.y]])
+                             [0,store.ts*self.y]],
+                             [store.ts*self.xsize,
+                             store.ts*self.ysize])
         gcoor = [0,0]
         genid = 1
         for i in range(self.x):
@@ -69,9 +77,10 @@ class Level(pyglet.window.Window):
             if len(tile.adjl) != 8:
                 store.buildmenu.build(tile,'wall',tile.coor)
 class Gamearea(object):
-    def __init__(self,name=None,coor=None):
+    def __init__(self,name=None,coor=None,size=None):
         self.name = name
         self.coor = coor
+        self.size = size
 def adj(tile_a, tile_b):
     for dir in range(4):
         if tile_a == tile_b.dirs[dir-1]: return True
