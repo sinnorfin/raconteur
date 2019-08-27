@@ -26,13 +26,14 @@ class Level(pyglet.window.Window):
         self.ycenter = self.ysize / 2
         self.maximized = False
         glOrtho(0, self.width, 0, self.height, -10, 10)
-    def ifmaximized(self):
-        if (self.xsize != self.width or self.ysize != self.height):
-            self.maximized = True
-            print("maximized!")
+    def isvertical(self):
+        if(self.width<self.height):
+            return True
     def adjust_resize(self):
         if ((self.xsize != self.width or self.ysize != self.height) and not self.maximized):
-            store.ts = int(self.width/self.x)
+            if (self.isvertical()):
+                store.ts = int(self.width/(self.x+3))
+            else: store.ts = int(self.height/(self.y+1))
             self.xframe = store.ts *3
             self.yframe = store.ts
             self.xsize = self.x*store.ts + self.xframe
@@ -40,8 +41,7 @@ class Level(pyglet.window.Window):
             store.ats = store.ts/2
             self.width = self.xsize
             self.height = self.ysize
-            glViewport(0,0,self.width,self.height)
-            self.ifmaximized()
+            glViewport(0,0,self.xsize,self.ysize)
     def on_resize(self,width,height):
         self.maximized = False
             #self.set_size(self.width,self.width*self.aspectratio)
